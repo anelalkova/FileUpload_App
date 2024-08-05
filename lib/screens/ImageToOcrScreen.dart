@@ -19,7 +19,7 @@ class ImageToOcrScreen extends StatefulWidget{
 class _ImageToOcrScreenState extends State<ImageToOcrScreen>{
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Text("Hello"),
     );
   }

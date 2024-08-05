@@ -7,7 +7,7 @@ import '../network/data_service.dart';
 class PDFViewPage extends StatefulWidget {
   final int id;
 
-  const PDFViewPage({Key? key, required this.id}) : super(key: key);
+  const PDFViewPage({super.key, required this.id});
 
   @override
   _PDFViewPageState createState() => _PDFViewPageState();

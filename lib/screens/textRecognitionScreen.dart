@@ -26,8 +26,8 @@ class PdfGeneratorPage extends StatefulWidget {
 }
 
 class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
-  List<File> _imageFiles = [];
-  String _extractedText = "";
+  final List<File> _imageFiles = [];
+  final String _extractedText = "";
   File? _pdfFile;
 
   Future<void> _pickImage(ImageSource source) async {
@@ -37,16 +37,16 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
       final confirm = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Confirm Image'),
+          title: const Text('Confirm Image'),
           content: Image.file(File(pickedFile.path)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text('Confirm'),
+              child: const Text('Confirm'),
             ),
           ],
         ),

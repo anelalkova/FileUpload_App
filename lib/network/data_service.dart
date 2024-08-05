@@ -197,7 +197,7 @@ class DataService {
 
     request.files.add(
       await http.MultipartFile.fromPath(
-        'pdf', // Use the field name expected by the server
+        'pdf',
         pdfFile.path,
         contentType: MediaType('application', 'pdf'),
       ),
@@ -219,7 +219,7 @@ class DataService {
 
   Future<String> ImageToPdf(List<File> images, String fileName, int documentTypeId, int documentId) async {
     final uri = Uri.parse(
-        'http://10.20.1.101:5039/api/Files/ImageToPdf?documentType=$documentTypeId&documentId=$documentId&pdfName=$fileName');
+        'http://10.20.1.101:5039/api/Files/ImageToPdf?documentType=$documentTypeId&documentId=$documentId&fileName=$fileName');
     final request = http.MultipartRequest('POST', uri);
 
     for (var image in images) {
@@ -254,6 +254,16 @@ class DataService {
       final response = await dio.get(url, options: Options(responseType: ResponseType.bytes));
       return Response(success: true, result: response.data);
     } catch (e) {
+      return Response(success: false, error: e.toString());
+    }
+  }
+
+  Future<Response<void>> deleteFile(int fileId) async{
+    ApiService apiResponse = ApiService(Dio());
+    try {
+      await apiResponse.deleteFile(fileId);
+      return Response(success: true);
+    }catch(e){
       return Response(success: false, error: e.toString());
     }
   }

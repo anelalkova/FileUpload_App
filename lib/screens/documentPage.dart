@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../network/api_service.dart';
 import '../network/data_service.dart';
 import 'accountScreen.dart';
@@ -63,7 +64,7 @@ class _DocumentPageState extends State<DocumentPage> {
   }
 
   String formatTimestamp(DateTime timestamp) {
-    return "${timestamp.day}-${timestamp.month}-${timestamp.year} ${timestamp.hour}:${timestamp.minute}";
+    return DateFormat('d MMM yyyy, HH:mm').format(timestamp);
   }
 
   Future<void> _showCreateDocumentDialog() async {
@@ -182,7 +183,7 @@ class _DocumentPageState extends State<DocumentPage> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(242, 235, 251, 1),
       appBar: AppBar(
-        title: const Text('Documents Archive'),
+        title: const Text('Documents Archive', style: TextStyle(color: Color.fromRGBO(88, 73, 111, 1), fontWeight: FontWeight.bold)),
         backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
         automaticallyImplyLeading: false,
         actions: [
@@ -309,8 +310,7 @@ class _OpacityDismissibleTileState extends State<OpacityDismissibleTile> {
   double _opacity = 1.0;
 
   String formatTimestamp(DateTime timestamp) {
-    return "${timestamp.day}-${timestamp.month}-${timestamp.year} ${timestamp
-        .hour}:${timestamp.minute}";
+    return DateFormat('d MMM yyyy, HH:mm').format(timestamp);
   }
 
   @override
@@ -343,8 +343,7 @@ class _OpacityDismissibleTileState extends State<OpacityDismissibleTile> {
           ),
           child: ListTile(
             title: Text(widget.document.description),
-            subtitle: Text("Last modified at: " +
-                formatTimestamp(widget.document.timestamp)),
+            subtitle: Text("Last modified at: ${formatTimestamp(widget.document.timestamp)}"),
             tileColor: Colors.transparent,
           ),
         ),

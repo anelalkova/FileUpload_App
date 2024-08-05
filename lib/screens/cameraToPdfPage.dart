@@ -83,7 +83,7 @@ class _CameraToPDFPageState extends State<CameraToPDFPage> {
           minHeight: 640,
           minWidth: 480,
           imageFile.absolute.path,
-          imageFile.path+"_${counter}.jpg",
+          "${imageFile.path}_$counter.jpg",
           quality: 88,
           autoCorrectionAngle: false
         );

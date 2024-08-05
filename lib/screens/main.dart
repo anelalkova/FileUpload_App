@@ -5,11 +5,9 @@ import '../network/api_service.dart';
 import '../network/data_service.dart';
 import 'documentPage.dart';
 
-List<CameraDescription>? cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
   runApp(const MyApp());
 }
 

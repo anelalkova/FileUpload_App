@@ -7,6 +7,7 @@ import '../network/data_service.dart';
 import 'ImageToOcrScreen.dart';
 import 'ImageToPdfScreen.dart';
 import 'documentPage.dart';
+import 'main.dart';
 import 'pdfViewPage.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
@@ -95,6 +96,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           builder: (context) => ImageToPdfScreen(
                             dataService: widget.dataService,
                             userResponse: widget.user,
+                            documentsResponse: widget.document,
+                            //documentsResponse: widget.document,
                           ),
                         ),
                       );
@@ -151,7 +154,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     } else if (index == 1) {
       _showCreateDocumentDialog();
     } else if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => AccountPage(
@@ -169,7 +172,20 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       backgroundColor: const Color.fromRGBO(242, 235, 251, 1),
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
-        title: Text(widget.document.description),
+        title: Text(widget.document.description, style: const TextStyle(color: Color.fromRGBO(88, 73, 111, 1), fontWeight: FontWeight.bold)),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    (route) => false,
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<FilesResponse>>(
         future: files,
@@ -187,44 +203,60 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               itemCount: filesData.length,
               itemBuilder: (context, index) {
                 final file = filesData[index];
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 5.0, horizontal: 10.0),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(251, 250, 255, 1),
-                    borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4.0,
-                        spreadRadius: 2.0,
-                      ),
-                    ],
+                return Dismissible(
+                  key: Key(file.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) async {
+                    await widget.dataService.deleteFile(file.id);
+                    setState(() {
+                      files = _initializeFiles();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('${_extractUserFileName(file.fileName)} deleted')),
+                    );
+                  },
+                  background: Container(
+                    color: const Color.fromRGBO(88, 73, 111, 1),
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
-                  child: ListTile(
-                    title: Text(_extractUserFileName(file.fileName)),
-                    subtitle: Text(file.path),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.open_in_new),
-                      onPressed: () async {
-                        if (file.path.endsWith('.pdf')) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PDFViewPage(
-                                id: file.id,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(251, 250, 255, 1),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4.0,
+                          spreadRadius: 2.0,
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      title: Text(_extractUserFileName(file.fileName)),
+                      subtitle: Text(file.path),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.open_in_new),
+                        onPressed: () async {
+                          if (file.path.endsWith('.pdf')) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PDFViewPage(id: file.id),
                               ),
-                            ),
-                          );
-                        } else {
-                          final openResult = await OpenFile.open(file.path);
-                          if (openResult.type != ResultType.done) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to open file: ${openResult.message}')),
                             );
+                          } else {
+                            final openResult = await OpenFile.open(file.path);
+                            if (openResult.type != ResultType.done) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to open file: ${openResult.message}')),
+                              );
+                            }
                           }
-                        }
-                      },
+                        },
+                      ),
                     ),
                   ),
                 );

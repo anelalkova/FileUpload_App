@@ -42,6 +42,8 @@ abstract class ApiService {
   Future<int> userLogin(@Body() UserLogin userLogin);
   @GET('/User/{id}')
   Future<UserResponse> getUserById(@Path('id') int id);
+  @DELETE('/api/Files/{id}')
+  Future<void>deleteFile(@Path('id')int id);
 }
 
 @JsonSerializable()

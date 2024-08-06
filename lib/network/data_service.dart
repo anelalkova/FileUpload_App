@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
+import 'package:fluttertoast/fluttertoast.dart';
 
 class DataService {
   Future<Response<List<DocumentsResponse>>> getDocumentsFromAPI() async {
@@ -265,6 +266,37 @@ class DataService {
       return Response(success: true);
     }catch(e){
       return Response(success: false, error: e.toString());
+    }
+  }
+
+  Future<void> downloadFile(int fileId) async {
+    final Dio dio = Dio();
+    final String url = 'http://10.20.1.101:5039/api/Files/GetFile/$fileId';
+
+    try {
+      final directory = Directory('/storage/emulated/0/Download');
+//      getExternalStorageDirectory();
+//     final downloadsDirectory = Directory('${directory?.path}/FileUploads');
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+
+      final filePath = '${directory.path}/file_$fileId.pdf';
+
+      await dio.download(url, filePath);
+
+      Fluttertoast.showToast(
+        msg: "File downloaded to $filePath",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error downloading file: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+      print("Error downloading file: $e");
     }
   }
 }

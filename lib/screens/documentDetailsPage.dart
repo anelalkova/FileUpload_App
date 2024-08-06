@@ -1,11 +1,10 @@
 import 'package:file_upload_app_part2/screens/accountScreen.dart';
+import 'package:file_upload_app_part2/screens/pdfGeneratorPage.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 
 import '../network/api_service.dart';
 import '../network/data_service.dart';
-import 'ImageToOcrScreen.dart';
-import 'ImageToPdfScreen.dart';
 import 'documentPage.dart';
 import 'main.dart';
 import 'pdfViewPage.dart';
@@ -93,11 +92,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ImageToPdfScreen(
+                          builder: (context) => PdfGeneratorPage(
                             dataService: widget.dataService,
-                            userResponse: widget.user,
-                            documentsResponse: widget.document,
-                            //documentsResponse: widget.document,
+                            user: widget.user,
+                            document: widget.document,
+                            isOcr: false,
                           ),
                         ),
                       );
@@ -111,9 +110,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ImageToOcrScreen(
+                          builder: (context) => PdfGeneratorPage(
                             dataService: widget.dataService,
-                            userResponse: widget.user,
+                            user: widget.user,
+                            document: widget.document,
+                            isOcr: true,
                           ),
                         ),
                       );
@@ -237,25 +238,36 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     child: ListTile(
                       title: Text(_extractUserFileName(file.fileName)),
                       subtitle: Text(file.path),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.open_in_new),
-                        onPressed: () async {
-                          if (file.path.endsWith('.pdf')) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PDFViewPage(id: file.id),
-                              ),
-                            );
-                          } else {
-                            final openResult = await OpenFile.open(file.path);
-                            if (openResult.type != ResultType.done) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Failed to open file: ${openResult.message}')),
-                              );
-                            }
-                          }
-                        },
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.open_in_new),
+                            onPressed: () async {
+                              if (file.path.endsWith('.pdf')) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PDFViewPage(id: file.id),
+                                  ),
+                                );
+                              } else {
+                                final openResult = await OpenFile.open(file.path);
+                                if (openResult.type != ResultType.done) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Failed to open file: ${openResult.message}')),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.download),
+                            onPressed: () async {
+                              await widget.dataService.downloadFile(file.id);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),

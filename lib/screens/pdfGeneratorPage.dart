@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 import 'package:file_upload_app_part2/screens/documentDetailsPage.dart';
-import 'package:file_upload_app_part2/screens/pdfPreviewPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,24 +13,28 @@ class PdfGeneratorPage extends StatefulWidget {
   final DataService dataService;
   final UserResponse user;
   final DocumentsResponse document;
+  final bool isOcr;
 
   const PdfGeneratorPage({
     required this.dataService,
     required this.user,
     required this.document,
-    super.key
-  });
+    required this.isOcr,
+    Key? key,
+  }) : super(key: key);
+
   @override
   _PdfGeneratorPageState createState() => _PdfGeneratorPageState();
 }
 
 class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
   final List<File> _imageFiles = [];
-  final String _extractedText = "";
   File? _pdfFile;
+  final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
+    final pickedFile = await _picker.pickImage(source: source);
 
     if (pickedFile != null) {
       final confirm = await showDialog<bool>(
@@ -68,8 +71,9 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
     final ttf = pw.Font.ttf(fontData);
 
     for (var imageFile in _imageFiles) {
-      final textRecognizer = TextRecognizer();
-      final recognizedText = await textRecognizer.processImage(InputImage.fromFilePath(imageFile.path));
+      final textRecognizer = GoogleMlKit.vision.textRecognizer();
+      final inputImage = InputImage.fromFile(imageFile);
+      final recognizedText = await textRecognizer.processImage(inputImage);
 
       final extractedText = recognizedText.text;
       textRecognizer.close();
@@ -95,8 +99,6 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
 
     print("PDF saved at ${outputFile.path}");
   }
-
-
 
   Future<String?> _getFileNameFromUser(BuildContext context) async {
     TextEditingController controller = TextEditingController();
@@ -130,16 +132,28 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
   }
 
   Future<void> _uploadPdf() async {
-    if (_pdfFile == null) return;
+    if (_imageFiles.isEmpty) return;
     String? fileName = await _getFileNameFromUser(context);
     if (fileName == null || fileName.isEmpty) return;
 
-    String result = await widget.dataService.ImageToOcr(
-      _pdfFile!,
-      widget.document.documentTypeId,
-      widget.document.id,
-      fileName,
-    );
+    String result;
+    if (widget.isOcr) {
+      await _generatePdf();
+      if(_pdfFile == null) return;
+        result = await widget.dataService.ImageToOcr(
+          _pdfFile!,
+          widget.document.documentTypeId,
+          widget.document.id,
+          fileName,
+        );
+    } else {
+      result = await widget.dataService.ImageToPdf(
+        _imageFiles,
+        fileName,
+        widget.document.documentTypeId,
+        widget.document.id,
+      );
+    }
 
     if (result.contains("successfully")) {
       Navigator.pushReplacement(
@@ -159,64 +173,74 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('PDF Generator')),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  _extractedText,
-                  style: const TextStyle(fontSize: 16),
+      appBar: AppBar(
+        title: Text(widget.isOcr ? 'Image to OCR' : 'Image to PDF'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await _uploadPdf();
+              setState(() {
+                _isLoading = false;
+              });
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    child: const Text('Open Camera'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    child: const Text('Open Gallery'),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _imageFiles.length,
+                  itemBuilder: (context, index) {
+                    return Image.file(_imageFiles[index]);
+                  },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.gallery),
-                child: const Text('Pick Image from Gallery'),
-              ),
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.camera),
-                child: const Text('Capture Image from Camera'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await _generatePdf();
-                  if (_pdfFile != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PdfPreviewPage(pdfFile: _pdfFile!),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No PDF file available to preview')),
-                    );
-                  }
-                },
-                child: const Text('Preview PDF'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_pdfFile != null) {
-                    await _uploadPdf();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No PDF file available to upload')),
-                    );
-                  }
-                },
-                child: const Text('Upload PDF'),
-              )
             ],
           ),
-        ),
+          if (_isLoading)
+            Container(
+              color: Colors.black54,
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 20),
+                    Text(
+                      'Saving...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

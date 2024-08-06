@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.yourapp">
+    package="com.example.file_upload_app_part2">
     <application
         android:label="file_upload_app_part2"
         android:icon="@mipmap/ic_launcher">

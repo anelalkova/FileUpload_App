@@ -7,6 +7,7 @@ import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DataService {
   Future<Response<List<DocumentsResponse>>> getDocumentsFromAPI() async {
@@ -274,15 +275,15 @@ class DataService {
     final String url = 'http://10.20.1.101:5039/api/Files/GetFile/$fileId';
 
     try {
-      final directory = Directory('/storage/emulated/0/Download');
-//      getExternalStorageDirectory();
-//     final downloadsDirectory = Directory('${directory?.path}/FileUploads');
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
+      final directory = await getExternalStorageDirectory();
+     final downloadsDirectory = Directory('${directory?.path}/FileUploads');
+      if (!await downloadsDirectory.exists()) {
+        await downloadsDirectory.create(recursive: true);
       }
 
-      final filePath = '${directory.path}/file_$fileId.pdf';
-
+      final filePath = '${downloadsDirectory.path}/file_$fileId.pdf';
+      //se zacuvue u This PC\Anastasija's S22+\Internal storage\Android\data\com.example.file_upload_app_part2\files\FileUploads
+      //ama ne moze da se otvore papkata na tel radi permisii na Android taka da na kompjuterot moze da se potvrde deka se siminja
       await dio.download(url, filePath);
 
       Fluttertoast.showToast(
@@ -299,6 +300,17 @@ class DataService {
       print("Error downloading file: $e");
     }
   }
+
+  Future<Response<void>> updateUser(int id, UpdateUser updateUser)async{
+    ApiService apiResponse = ApiService(Dio());
+    try{
+      await apiResponse.updateUser(id, updateUser);
+      return Response(success: true);
+    }catch(e){
+      return Response(success: false, error: e.toString());
+    }
+  }
+
 }
 
 

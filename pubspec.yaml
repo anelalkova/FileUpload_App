@@ -10,34 +10,20 @@ dependencies:
   flutter:
     sdk: flutter
   http:
-  flutter_form_builder:
-  form_builder_validators:
   retrofit:
   dio:
   json_annotation:
   json_serializable:
-  camera:
-  path_provider:
-  path:
+  path_provider: ^2.1.4
   open_file:
   image:
   pdf:
-  permission_handler:
-  file_picker:
-  device_info_plus:
   flutter_pdfview:
   bloc:
-  flutter_bloc:
   http_parser:
-  flutter_image_compress:
   image_picker:
-  syncfusion_flutter_pdfviewer:
-  pdf_render:
-  edge_detection:
-  image_cropper:
   intl:
   google_ml_kit:
-  google_mlkit_text_recognition:
   fluttertoast:
 
 dev_dependencies:
@@ -46,6 +32,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   build_runner: ">=2.3.0 <4.0.0"
   retrofit_generator: ^8.1.1
+  dependency_validator: ^4.1.0
 
 flutter:
   uses-material-design: true

@@ -20,8 +20,8 @@ class PdfGeneratorPage extends StatefulWidget {
     required this.user,
     required this.document,
     required this.isOcr,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _PdfGeneratorPageState createState() => _PdfGeneratorPageState();
@@ -71,7 +71,7 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
     final ttf = pw.Font.ttf(fontData);
 
     for (var imageFile in _imageFiles) {
-      final textRecognizer = GoogleMlKit.vision.textRecognizer();
+      TextRecognizer textRecognizer = TextRecognizer();
       final inputImage = InputImage.fromFile(imageFile);
       final recognizedText = await textRecognizer.processImage(inputImage);
 

@@ -44,6 +44,8 @@ abstract class ApiService {
   Future<UserResponse> getUserById(@Path('id') int id);
   @DELETE('/api/Files/{id}')
   Future<void>deleteFile(@Path('id')int id);
+  @PUT('/User/{id}')
+  Future<void> updateUser(@Path('id') int id, @Body() UpdateUser updateUser);
 }
 
 @JsonSerializable()
@@ -214,5 +216,26 @@ class UserLogin{
   Map<String, dynamic> toJson() => _$UserLoginToJson(this);
 }
 
+@JsonSerializable()
+class UpdateUser{
+  @JsonKey(name:'name')
+  final String name;
+  @JsonKey(name:'email')
+  final String email;
+  @JsonKey(name:'password')
+  final String password;
+  @JsonKey(name:'active')
+  final bool active;
+  @JsonKey(name:'activation_Code')
+  final String activation_Code;
 
-
+  UpdateUser({
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.active,
+    required this.activation_Code,
+  });
+  factory UpdateUser.fromJson(Map<String, dynamic> json) => _$UpdateUserFromJson(json);
+  Map<String, dynamic> toJson() => _$UpdateUserToJson(this);
+}

@@ -1,3 +1,4 @@
+import 'package:file_upload_app_part2/screens/editAccountScreen.dart';
 import 'package:flutter/material.dart';
 import '../network/api_service.dart';
 import '../network/data_service.dart';
@@ -113,10 +114,11 @@ class _AccountPageState extends State<AccountPage> {
                 width: 200,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                          (route) => false,
+                      MaterialPageRoute(builder: (context) => EditAccountScreen(
+                          dataService: widget.dataService,
+                          userResponse: widget.userResponse)),
                     );
                   },
                   style: ElevatedButton.styleFrom(

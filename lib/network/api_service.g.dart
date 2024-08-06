@@ -134,6 +134,23 @@ Map<String, dynamic> _$UserLoginToJson(UserLogin instance) => <String, dynamic>{
       'password': instance.password,
     };
 
+UpdateUser _$UpdateUserFromJson(Map<String, dynamic> json) => UpdateUser(
+      name: json['name'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+      active: json['active'] as bool,
+      activation_Code: json['activation_Code'] as String,
+    );
+
+Map<String, dynamic> _$UpdateUserToJson(UpdateUser instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'email': instance.email,
+      'password': instance.password,
+      'active': instance.active,
+      'activation_Code': instance.activation_Code,
+    };
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -561,6 +578,34 @@ class _ApiService implements ApiService {
         .compose(
           _dio.options,
           '/api/Files/${id}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+  }
+
+  @override
+  Future<void> updateUser(
+    int id,
+    UpdateUser updateUser,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(updateUser.toJson());
+    await _dio.fetch<void>(_setStreamType<void>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/User/${id}',
           queryParameters: queryParameters,
           data: _data,
         )

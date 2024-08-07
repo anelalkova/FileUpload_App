@@ -58,8 +58,8 @@ class _PDFViewPageState extends State<PDFViewPage> {
                     },
                   ),
                   Positioned(
-                    bottom: 10,
-                    right: 10,
+                    bottom: 12,
+                    right: 12,
                     child: Container(
                       width: 100,
                       padding: EdgeInsets.all(5.0),
@@ -70,7 +70,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
                       ),
                         child: Text(
                         'Page ${_currentPage + 1} of $_totalPages',
-                        style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w400, ),
                       ),
                     )
                   ),

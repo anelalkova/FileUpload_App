@@ -41,3 +41,8 @@ flutter:
     - assets/OpenSans-VariableFont_wdth,wght.ttf
     - assets/TempProfileImage.png
     - assets/TempProfileImage1.png
+    - assets/pdf_icon.png
+    - assets/ocr_icon.png
+    - assets/scan_icon.png
+    - assets/gallery_icon.png
+    - assets/camera_icon.png

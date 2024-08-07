@@ -32,6 +32,27 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
   File? _pdfFile;
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+      final page = _pageController.page?.round() ?? 0;
+      if (_currentPage != page) {
+        setState(() {
+          _currentPage = page;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
@@ -139,13 +160,13 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
     String result;
     if (widget.isOcr) {
       await _generatePdf();
-      if(_pdfFile == null) return;
-        result = await widget.dataService.ImageToOcr(
-          _pdfFile!,
-          widget.document.documentTypeId,
-          widget.document.id,
-          fileName,
-        );
+      if (_pdfFile == null) return;
+      result = await widget.dataService.ImageToOcr(
+        _pdfFile!,
+        widget.document.documentTypeId,
+        widget.document.id,
+        fileName,
+      );
     } else {
       result = await widget.dataService.ImageToPdf(
         _imageFiles,
@@ -177,7 +198,8 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isOcr ? 'Image to OCR' : 'Image to PDF'),
+        title: Text(widget.isOcr ? 'Image to OCR' : 'Image to PDF',
+          style: TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -196,26 +218,121 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
       body: Stack(
         children: [
           Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _pickImage(ImageSource.camera),
-                    child: const Text('Open Camera'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: _imageFiles.isEmpty
+                      ? Center(
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 400,
+                      height: 450,
+                      color: Colors.grey[200],
+                      child: const Text(
+                        'Images will be displayed here',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                  )
+                      : PageView.builder(
+                    controller: _pageController,
+                    itemCount: _imageFiles.length,
+                    itemBuilder: (context, index) {
+                      return Image.file(_imageFiles[index]);
+                    },
                   ),
-                  ElevatedButton(
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                    child: const Text('Open Gallery'),
-                  ),
-                ],
+                ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _imageFiles.length,
-                  itemBuilder: (context, index) {
-                    return Image.file(_imageFiles[index]);
-                  },
+              if (_imageFiles.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _imageFiles.length,
+                          (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 3.0),
+                        width: 8.0,
+                        height: 8.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: index == _currentPage
+                              ? Colors.grey
+                              : Colors.grey[300],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(233, 216, 243, 0.5),
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 3,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            onPressed: () => _pickImage(ImageSource.camera),
+                            icon: Image.asset(
+                              'assets/camera_icon.png',
+                              width: 100,
+                              height: 50,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text('Camera'),
+                      ],
+                    ),
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(233, 216, 243, 0.5),
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 3,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            onPressed: () => _pickImage(ImageSource.gallery),
+                            icon: Image.asset(
+                              'assets/gallery_icon.png',
+                              width: 100,
+                              height: 50,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text('Gallery'),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -4,6 +4,7 @@ import '../network/api_service.dart';
 import '../network/data_service.dart';
 import 'accountScreen.dart';
 import 'documentDetailsPage.dart';
+import 'editAccountScreen.dart';
 import 'main.dart';
 
 class DocumentPage extends StatefulWidget {
@@ -183,18 +184,83 @@ class _DocumentPageState extends State<DocumentPage> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(242, 235, 251, 1),
       appBar: AppBar(
-        title: const Text('Documents Archive', style: TextStyle(color: Color.fromRGBO(88, 73, 111, 1), fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Documents Archive',
+          style: TextStyle(
+            color: Color.fromRGBO(88, 73, 111, 1),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    (route) => false,
-              );
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'View Profile':
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AccountPage(
+                              dataService: widget.dataService,
+                              userResponse: widget.user
+                          )
+                      )
+                  );
+                  break;
+                case 'Edit Profile':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditAccountScreen(
+                        dataService: widget.dataService,
+                        userResponse: widget.user,
+                      ),
+                    ),
+                  );
+                  break;
+                case 'Log out':
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        (route) => false,
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'View Profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, color: Color.fromRGBO(88, 73, 111, 1)),
+                      SizedBox(width: 10),
+                      Text('View Profile'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Edit Profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit, color: Color.fromRGBO(88, 73, 111, 1)),
+                      SizedBox(width: 10),
+                      Text('Edit Profile'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Log out',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Color.fromRGBO(88, 73, 111, 1)),
+                      SizedBox(width: 10),
+                      Text('Log out'),
+                    ],
+                  ),
+                ),
+              ];
             },
           ),
         ],
@@ -254,17 +320,27 @@ class _DocumentPageState extends State<DocumentPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(
+              Icons.home,
+              color: Colors.black,
+            ),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add, size: 40.0),
+            icon: Icon(
+                Icons.add,
+                size: 40.0,
+                color: Colors.black,
+            ),
             label: "New",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+       /*   BottomNavigationBarItem(
+            icon: Icon(
+                Icons.person,
+                color: Colors.black,
+            ),
             label: "Account",
-          ),
+          ),*/
         ],
         currentIndex: _selectedIndex,
         onTap: (index) async {
@@ -273,7 +349,7 @@ class _DocumentPageState extends State<DocumentPage> {
             setState(() {
               futureDocuments = getDocumentsFromUserFromAPI(widget.user.id);
             });
-          } else if (index == 2) {
+          } /*else if (index == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -283,7 +359,7 @@ class _DocumentPageState extends State<DocumentPage> {
                 ),
               ),
             );
-          } else {
+          }*/ else {
             _onItemTapped(index);
           }
         },
@@ -342,7 +418,7 @@ class _OpacityDismissibleTileState extends State<OpacityDismissibleTile> {
             ],
           ),
           child: ListTile(
-            title: Text(widget.document.description),
+            title: Text(widget.document.description, style: const TextStyle(fontWeight: FontWeight.w500)),
             subtitle: Text("Last modified at: ${formatTimestamp(widget.document.timestamp)}"),
             tileColor: Colors.transparent,
           ),

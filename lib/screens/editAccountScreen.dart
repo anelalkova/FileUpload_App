@@ -23,7 +23,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
-  late TextEditingController _activationCodeController;
   bool _passwordVisible = false;
 
   @override
@@ -32,7 +31,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     _nameController = TextEditingController(text: widget.userResponse.name);
     _emailController = TextEditingController(text: widget.userResponse.email);
     _passwordController = TextEditingController(text: widget.userResponse.password);
-    _activationCodeController = TextEditingController(text: widget.userResponse.activation_Code);
   }
 
   @override
@@ -40,7 +38,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _activationCodeController.dispose();
     super.dispose();
   }
 
@@ -88,17 +85,18 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           ),
         ],
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: <Widget>[
+              const SizedBox(height: 70),
               const CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage('assets/avatar_placeholder.png'),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 60),
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -154,34 +152,19 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _activationCodeController,
-                decoration: InputDecoration(
-                  labelText: 'Activation Code',
-                  prefixIcon: const Icon(Icons.code),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your activation code';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _updateUser,
-                child: const Text(
-                  'Update',
-                  style: TextStyle(color: Color.fromRGBO(242, 235, 251, 1)),
-                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(88, 73, 111, 1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Color.fromRGBO(242, 235, 251, 1)),
                 ),
               ),
             ],

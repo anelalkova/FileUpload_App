@@ -6,6 +6,7 @@ import 'package:open_file/open_file.dart';
 import '../network/api_service.dart';
 import '../network/data_service.dart';
 import 'documentPage.dart';
+import 'editAccountScreen.dart';
 import 'main.dart';
 import 'pdfViewPage.dart';
 
@@ -77,61 +78,114 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Create File'),
-          content: SingleChildScrollView(
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    child: const Text('Convert Image to PDF'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PdfGeneratorPage(
-                            dataService: widget.dataService,
-                            user: widget.user,
-                            document: widget.document,
-                            isOcr: false,
-                          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          contentPadding: EdgeInsets.zero,
+          content: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0,
+                  offset: Offset(0.0, 10.0),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: Image.asset(
+                                'assets/pdf_icon.png',
+                                width: 70.0,
+                                height: 70.0,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PdfGeneratorPage(
+                                      dataService: widget.dataService,
+                                      user: widget.user,
+                                      document: widget.document,
+                                      isOcr: false,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Create PDF',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    child: const Text('Convert Image to OCR'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PdfGeneratorPage(
-                            dataService: widget.dataService,
-                            user: widget.user,
-                            document: widget.document,
-                            isOcr: true,
-                          ),
+                        const SizedBox(width: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: Image.asset(
+                                'assets/ocr_icon.png',
+                                width: 70.0,
+                                height: 70.0,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PdfGeneratorPage(
+                                      dataService: widget.dataService,
+                                      user: widget.user,
+                                      document: widget.document,
+                                      isOcr: true,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Create OCR',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );
@@ -154,7 +208,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       );
     } else if (index == 1) {
       _showCreateDocumentDialog();
-    } else if (index == 2) {
+    } /*else if (index == 2) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -164,7 +218,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           ),
         ),
       );
-    }
+    }*/
   }
 
   @override
@@ -172,18 +226,77 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(242, 235, 251, 1),
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
         title: Text(widget.document.description, style: const TextStyle(color: Color.fromRGBO(88, 73, 111, 1), fontWeight: FontWeight.bold)),
+        backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    (route) => false,
-              );
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'View Profile':
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AccountPage(
+                              dataService: widget.dataService,
+                              userResponse: widget.user
+                          )
+                      )
+                  );
+                  break;
+                case 'Edit Profile':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditAccountScreen(
+                        dataService: widget.dataService,
+                        userResponse: widget.user,
+                      ),
+                    ),
+                  );
+                  break;
+                case 'Log out':
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        (route) => false,
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'View Profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, color: Color.fromRGBO(88, 73, 111, 1)),
+                      SizedBox(width: 10),
+                      Text('View Profile'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Edit Profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit, color: Color.fromRGBO(88, 73, 111, 1)),
+                      SizedBox(width: 10),
+                      Text('Edit Profile'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Log out',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Color.fromRGBO(88, 73, 111, 1)),
+                      SizedBox(width: 10),
+                      Text('Log out'),
+                    ],
+                  ),
+                ),
+              ];
             },
           ),
         ],
@@ -236,13 +349,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       ],
                     ),
                     child: ListTile(
-                      title: Text(_extractUserFileName(file.fileName)),
+                      title: Text(_extractUserFileName(file.fileName), style: TextStyle(fontWeight: FontWeight.w500)),
                       subtitle: Text(file.path),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.open_in_new),
+                            icon: const Icon(
+                                Icons.open_in_new,
+                                color: Colors.black,
+                            ),
                             onPressed: () async {
                               if (file.path.endsWith('.pdf')) {
                                 Navigator.push(
@@ -262,7 +378,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                             },
                           ),
                           IconButton(
-                            icon: const Icon(Icons.download),
+                            icon: const Icon(
+                                Icons.download,
+                                color: Colors.black,
+                            ),
                             onPressed: () async {
                               await widget.dataService.downloadFile(file.id);
                             },
@@ -280,19 +399,29 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.black,
+              size: 30,
+            ),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add, size: 40.0),
+              icon: Image.asset('assets/scan_icon.png',
+              width: 30,
+              height: 30,
+            ),
             label: "New",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+          ),/*
+          const BottomNavigationBarItem(
+            icon: Icon(
+                Icons.person,
+                color: Colors.black,
+            ),
             label: "Account",
-          ),
+          ),*/
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

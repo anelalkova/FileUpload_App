@@ -86,94 +86,124 @@ class _DocumentPageState extends State<DocumentPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Create Document'),
-          content: SingleChildScrollView(
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  TextFormField(
-                    controller: documentNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Document Name',
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          contentPadding: EdgeInsets.zero,
+          content: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0,
+                  offset: Offset(0.0, 10.0),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: documentNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Document Name',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a document name';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a document name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<DocumentTypesResponse>(
-                    value: selectedDocumentType,
-                    decoration: const InputDecoration(
-                      labelText: 'Document Type',
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<DocumentTypesResponse>(
+                      value: selectedDocumentType,
+                      decoration: const InputDecoration(
+                        labelText: 'Document Type',
+                      ),
+                      items: documentTypes.map((DocumentTypesResponse documentType) {
+                        return DropdownMenuItem<DocumentTypesResponse>(
+                          value: documentType,
+                          child: Text(documentType.title),
+                        );
+                      }).toList(),
+                      onChanged: (DocumentTypesResponse? newValue) {
+                        setState(() {
+                          selectedDocumentType = newValue;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select a document type';
+                        }
+                        return null;
+                      },
                     ),
-                    items: documentTypes.map((DocumentTypesResponse documentType) {
-                      return DropdownMenuItem<DocumentTypesResponse>(
-                        value: documentType,
-                        child: Text(documentType.title),
-                      );
-                    }).toList(),
-                    onChanged: (DocumentTypesResponse? newValue) {
-                      setState(() {
-                        selectedDocumentType = newValue;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a document type';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Icon(
+                            Icons.cancel,
+                            size: 30,
+                            color: Colors.black,
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState != null && formKey.currentState!.validate()) {
+                              var createDocumentRequest = CreateDocumentRequest(
+                                id: 0,
+                                description: documentNameController.text,
+                                userId: widget.user.id,
+                                documentTypeId: selectedDocumentType?.id ?? 0,
+                                timestamp: DateTime.now(),
+                              );
+
+                              try {
+                                var result = await widget.dataService.createDocument(createDocumentRequest);
+                                if (result.success) {
+                                  Navigator.of(context).pop(result.result);
+                                  setState(() {
+                                    futureDocuments = getDocumentsFromUserFromAPI(widget.user.id);
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Failed to create document: ${result.error}')),
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error: $e')),
+                                );
+                              }
+                            }
+                          },
+                          child: const Icon(
+                            Icons.check,
+                            size: 30,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Save'),
-              onPressed: () async {
-                if (formKey.currentState != null && formKey.currentState!.validate()) {
-                  var createDocumentRequest = CreateDocumentRequest(
-                    id: 0,
-                    description: documentNameController.text,
-                    userId: widget.user.id,
-                    documentTypeId: selectedDocumentType?.id ?? 0,
-                    timestamp: DateTime.now(),
-                  );
-
-                  try {
-                    var result = await widget.dataService.createDocument(createDocumentRequest);
-                    if (result.success) {
-                      Navigator.of(context).pop(result.result);
-                      setState(() {
-                        futureDocuments = getDocumentsFromUserFromAPI(widget.user.id);
-                      });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to create document: ${result.error}')),
-                      );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e')),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
         );
       },
     );
@@ -195,6 +225,7 @@ class _DocumentPageState extends State<DocumentPage> {
         automaticallyImplyLeading: false,
         actions: [
           PopupMenuButton<String>(
+            position: PopupMenuPosition.under,
             onSelected: (value) {
               switch (value) {
                 case 'View Profile':

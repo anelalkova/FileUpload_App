@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 import '../network/api_service.dart';
-import 'main.dart';
 
 class EditAccountScreen extends StatefulWidget {
   final DataService dataService;
@@ -53,10 +52,19 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
       try {
         await widget.dataService.updateUser(widget.userResponse.id, updateUser);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User updated successfully')));
-        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User updated successfully')));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) =>
+            EditAccountScreen(
+                dataService: widget.dataService,
+                userResponse: widget.userResponse
+            )
+        )
+        );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update user: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update user: $e')));
       }
     }
   }
@@ -71,8 +79,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           style: TextStyle(color: Color.fromRGBO(88, 73, 111, 1), fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
-        automaticallyImplyLeading: false,
-        actions: [
+       // automaticallyImplyLeading: false,
+        /*actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
@@ -83,7 +91,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               );
             },
           ),
-        ],
+        ],*/
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -91,10 +99,14 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              const SizedBox(height: 70),
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/avatar_placeholder.png'),
+              SizedBox(height: 60),
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Image.asset("assets/TempProfileImage1.png"),
+                ),
               ),
               const SizedBox(height: 60),
               TextFormField(

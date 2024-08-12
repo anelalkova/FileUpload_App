@@ -19,12 +19,19 @@ dependencies:
   image:
   pdf:
   flutter_pdfview:
-  bloc:
+  bloc: ^8.1.4
   http_parser:
   image_picker:
   intl:
   google_ml_kit:
   fluttertoast:
+  flutter_bloc: ^8.1.6
+  flutter_secure_storage: ^4.2.1
+  permission_handler: ^11.3.1
+  equatable: ^2.0.5
+  flutter_login: ^4.1.1
+  font_awesome_flutter: ^10.7.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

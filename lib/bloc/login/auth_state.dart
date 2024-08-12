@@ -1,19 +1,44 @@
-//States represent different conditions of the app that can occur as a result of events.
+part of 'auth_bloc.dart';
 
-abstract class AuthState {}
+class AuthState{
+  final bool loginIsValid;
+  final bool isUserAccountActive;
+  final bool isUserRegistered;
+  final bool triedToAutoLogin;
 
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthSuccess extends AuthState {
-  final String message;
-
-  AuthSuccess({required this.message});
+  const AuthState({
+    this.loginIsValid = false,
+    this.isUserAccountActive = false,
+    this.isUserRegistered = false,
+    this.triedToAutoLogin = false,
+  });
 }
 
-class AuthFailure extends AuthState {
+final class AuthInitial extends AuthState{
+  const AuthInitial({
+    super.loginIsValid,
+    super.isUserAccountActive,
+    super.isUserRegistered,
+    super.triedToAutoLogin,
+  });
+}
+
+final class AuthLoading extends AuthState {}
+
+final class AuthRegisteredSuccessfully extends AuthState {}
+
+final class AuthVerify extends AuthState {}
+
+final class AuthVerifySuccess extends AuthState {}
+
+final class AuthVerifyFailure extends AuthState {}
+
+final class AuthSuccess extends AuthState {}
+
+final class AuthFailure extends AuthState{
   final String error;
 
-  AuthFailure({required this.error});
+  const AuthFailure({required this.error});
 }
+
+final class AutoLoginSuccess extends AuthState {}

@@ -74,7 +74,9 @@ CreateDocumentRequest _$CreateDocumentRequestFromJson(
       description: json['description'] as String,
       documentTypeId: (json['document_Type_Id'] as num).toInt(),
       userId: (json['user_Id'] as num).toInt(),
-      timestamp: DateTime.parse(json['timestamp'] as String),
+      timestamp: json['timestamp'] == null
+          ? null
+          : DateTime.parse(json['timestamp'] as String),
     );
 
 Map<String, dynamic> _$CreateDocumentRequestToJson(
@@ -84,7 +86,7 @@ Map<String, dynamic> _$CreateDocumentRequestToJson(
       'description': instance.description,
       'user_Id': instance.userId,
       'document_Type_Id': instance.documentTypeId,
-      'timestamp': instance.timestamp.toIso8601String(),
+      'timestamp': instance.timestamp?.toIso8601String(),
     };
 
 DocumentsResponse _$DocumentsResponseFromJson(Map<String, dynamic> json) =>
@@ -286,35 +288,6 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<CreateDocumentRequest> createDocument(
-      CreateDocumentRequest createDocumentRequest) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(createDocumentRequest.toJson());
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CreateDocumentRequest>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/api/Documents',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final _value = CreateDocumentRequest.fromJson(_result.data!);
-    return _value;
-  }
-
-  @override
   Future<List<FilesResponse>> getFilesForDocument(int documentId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -344,81 +317,29 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<int> deleteDocument(int documentId) async {
+  Future<UserResponse> getUserById(int id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _result = await _dio.fetch<int>(_setStreamType<int>(Options(
-      method: 'DELETE',
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<UserResponse>(Options(
+      method: 'GET',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-          _dio.options,
-          '/api/Documents/${documentId}',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        ))));
-    final _value = _result.data!;
-    return _value;
-  }
-
-  @override
-  Future<bool> registerUser(RegisterUserRequest registerUser) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(registerUser.toJson());
-    final _result = await _dio.fetch<bool>(_setStreamType<bool>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/User/Register',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        ))));
-    final _value = _result.data!;
-    return _value;
-  }
-
-  @override
-  Future<bool> resendVerificationLink(String email) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'email': email};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _result = await _dio.fetch<bool>(_setStreamType<bool>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/User/ResendVerificationLink',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        ))));
-    final _value = _result.data!;
+            .compose(
+              _dio.options,
+              '/User/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final _value = UserResponse.fromJson(_result.data!);
     return _value;
   }
 
@@ -483,6 +404,88 @@ class _ApiService implements ApiService {
   }
 
   @override
+  Future<CreateDocumentRequest> createDocument(
+      CreateDocumentRequest createDocumentRequest) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(createDocumentRequest.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CreateDocumentRequest>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/Documents',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final _value = CreateDocumentRequest.fromJson(_result.data!);
+    return _value;
+  }
+
+  @override
+  Future<bool> registerUser(RegisterUserRequest registerUser) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(registerUser.toJson());
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/User/Register',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final _value = _result.data!;
+    return _value;
+  }
+
+  @override
+  Future<bool> resendVerificationLink(String email) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'email': email};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<bool>(_setStreamType<bool>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/User/ResendVerificationLink',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final _value = _result.data!;
+    return _value;
+  }
+
+  @override
   Future<FilesResponse> createFile(FilesResponse file) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -538,29 +541,28 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<UserResponse> getUserById(int id) async {
+  Future<int> deleteDocument(int documentId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<UserResponse>(Options(
-      method: 'GET',
+    final _result = await _dio.fetch<int>(_setStreamType<int>(Options(
+      method: 'DELETE',
       headers: _headers,
       extra: _extra,
     )
-            .compose(
-              _dio.options,
-              '/User/${id}',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final _value = UserResponse.fromJson(_result.data!);
+        .compose(
+          _dio.options,
+          '/api/Documents/${documentId}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final _value = _result.data!;
     return _value;
   }
 

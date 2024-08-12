@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_upload_app_part2/models/document.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:file_upload_app_part2/network/api_service.dart';
@@ -8,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../models/document_type.dart';
 
 class DataService {
   Future<Response<List<DocumentsResponse>>> getDocumentsFromAPI() async {
@@ -311,6 +314,59 @@ class DataService {
     }
   }
 
+
+  //BLOC REQUESTS
+
+
+  Future<List<DocumentTypeModel>> getDocumentTypesBLOC() async{
+      var fetchedDocumentTypes = await getDocumentTypes();
+      if(!fetchedDocumentTypes.success){
+        print('Error fetching data: ${fetchedDocumentTypes.error.toString()}');
+        throw Error();
+      }
+
+      List<DocumentTypesResponse> documentTypes = fetchedDocumentTypes.result!;
+
+      return documentTypes
+          .map((documentType) => DocumentTypeModel(
+          id: documentType.id,
+          title: documentType.title,
+          active: documentType.active
+          ))
+          .toList();
+  }
+
+  Future<List<DocumentModel>> getDocumentsBLOC(int user_id) async{
+    var fetchedDocuments = await getDocumentsByUser(user_id);
+    if(!fetchedDocuments.success){
+      print("Error fetching data: ${fetchedDocuments.error.toString()}");
+      throw Error();
+    }
+    List<DocumentsResponse> documents = fetchedDocuments.result!;
+
+    List<DocumentTypeModel> documentTypes = await getDocumentTypesBLOC();
+
+    return documents
+        .map((document) => DocumentModel(
+        id: document.id,
+        description: document.description,
+        user_id: document.userId,
+        document_type_id: document.documentTypeId,
+        timestamp: document.timestamp))
+        .toList();
+  }
+
+  Future<Response<List<DocumentsResponse>>> getDocumentsByUserBLOC(int userId) async {
+    ApiService apiResponse = ApiService(Dio());
+    try {
+      var result = await apiResponse.getDocumentsByUser(userId);
+      print('Documents fetched: ${result.length}');
+      return Response(success: true, result: result);
+    } catch (e) {
+      print('Error fetching documents: $e');
+      return Response(success: false, error: e.toString());
+    }
+  }
 }
 
 

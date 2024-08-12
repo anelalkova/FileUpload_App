@@ -14,36 +14,55 @@ abstract class ApiService {
     return _ApiService(dio, baseUrl: baseUrl);
   }
 
+  //GET REQUESTS
   @GET('/api/Documents')
   Future<List<DocumentsResponse>> getDocuments();
+
   @GET('/api/User')
   Future<List<UserResponse>> getUsers();
+
   @GET('/User/GetUserByEmail/{email}')
   Future<UserResponse> getUserByEmail(@Path('email') String email);
+
   @GET('/api/Documents/GetDocumentsByUser/{user_id}')
   Future<List<DocumentsResponse>> getDocumentsByUser(@Path('user_id') int userId);
-  @POST('/api/Documents')
-  Future<CreateDocumentRequest> createDocument(@Body() CreateDocumentRequest createDocumentRequest);
+
   @GET('/GetFilesByDocumentId/{document_id}')
   Future<List<FilesResponse>> getFilesForDocument(@Path('document_id') int documentId);
-  @DELETE('/api/Documents/{document_id}')
-  Future<int> deleteDocument(@Path('document_id') int documentId);
-  @POST('/User/Register')
-  Future<bool> registerUser(@Body() RegisterUserRequest registerUser);
-  @POST('/User/ResendVerificationLink')
-  Future<bool> resendVerificationLink(@Query('email') String email);
-  @GET('/api/FileTypes')
-  Future<List<FileTypesResponse>> getFileTypes();
-  @GET('/api/DocumentTypes')
-  Future<List<DocumentTypesResponse>> getDocumentTypes();
-  @POST('/api/Files')
-  Future<FilesResponse> createFile(@Body() FilesResponse file);
-  @POST('/User/Login')
-  Future<int> userLogin(@Body() UserLogin userLogin);
+
   @GET('/User/{id}')
   Future<UserResponse> getUserById(@Path('id') int id);
+
+  @GET('/api/FileTypes')
+  Future<List<FileTypesResponse>> getFileTypes();
+
+  @GET('/api/DocumentTypes')
+  Future<List<DocumentTypesResponse>> getDocumentTypes();
+
+  //POST REQUESTS
+  @POST('/api/Documents')
+  Future<CreateDocumentRequest> createDocument(@Body() CreateDocumentRequest createDocumentRequest);
+
+  @POST('/User/Register')
+  Future<bool> registerUser(@Body() RegisterUserRequest registerUser);
+
+  @POST('/User/ResendVerificationLink')
+  Future<bool> resendVerificationLink(@Query('email') String email);
+
+  @POST('/api/Files')
+  Future<FilesResponse> createFile(@Body() FilesResponse file);
+
+  @POST('/User/Login')
+  Future<int> userLogin(@Body() UserLogin userLogin);
+
+  //DELETE REQUESTS
+  @DELETE('/api/Documents/{document_id}')
+  Future<int> deleteDocument(@Path('document_id') int documentId);
+
   @DELETE('/api/Files/{id}')
   Future<void>deleteFile(@Path('id')int id);
+
+  //PUT REQUESTS
   @PUT('/User/{id}')
   Future<void> updateUser(@Path('id') int id, @Body() UpdateUser updateUser);
 }
@@ -64,8 +83,10 @@ class DocumentTypesResponse{
   });
 
   factory DocumentTypesResponse.fromJson(Map<String, dynamic> json) => _$DocumentTypesResponseFromJson(json);
+
   Map<String, dynamic>toJson() =>  _$DocumentTypesResponseToJson(this);
 }
+
 @JsonSerializable()
 class FileTypesResponse{
   @JsonKey(name:'id')
@@ -79,6 +100,7 @@ class FileTypesResponse{
   });
 
   factory FileTypesResponse.fromJson(Map<String, dynamic> json) => _$FileTypesResponseFromJson(json);
+
   Map<String, dynamic>toJson() =>  _$FileTypesResponseToJson(this);
 }
 
@@ -104,6 +126,7 @@ class FilesResponse{
   });
 
   factory FilesResponse.fromJson(Map<String, dynamic> json) => _$FilesResponseFromJson(json);
+
   Map<String, dynamic>toJson() =>  _$FilesResponseToJson(this);
 }
 
@@ -123,8 +146,10 @@ class RegisterUserRequest{
   });
 
   factory RegisterUserRequest.fromJson(Map<String, dynamic> json) => _$RegisterUserRequestFromJson(json);
+
   Map<String, dynamic> toJson() => _$RegisterUserRequestToJson(this);
 }
+
 @JsonSerializable()
 class CreateDocumentRequest {
   @JsonKey(name: 'id')
@@ -136,19 +161,21 @@ class CreateDocumentRequest {
   @JsonKey(name: 'document_Type_Id')
   final int documentTypeId;
   @JsonKey(name: 'timestamp')
-  final DateTime timestamp;
+  final DateTime? timestamp;
 
   CreateDocumentRequest({
     required this.id,
     required this.description,
     required this.documentTypeId,
     required this.userId,
-    required this.timestamp
+    this.timestamp
   });
 
   factory CreateDocumentRequest.fromJson(Map<String, dynamic> json) => _$CreateDocumentRequestFromJson(json);
+
   Map<String, dynamic> toJson() => _$CreateDocumentRequestToJson(this);
 }
+
 @JsonSerializable()
 class DocumentsResponse {
   @JsonKey(name: 'id')
@@ -171,6 +198,7 @@ class DocumentsResponse {
   });
 
   factory DocumentsResponse.fromJson(Map<String, dynamic> json) => _$DocumentsResponseFromJson(json);
+
   Map<String, dynamic> toJson() => _$DocumentsResponseToJson(this);
 }
 
@@ -197,7 +225,9 @@ class UserResponse{
     required this.active,
     required this.activation_Code,
   });
+
   factory UserResponse.fromJson(Map<String, dynamic> json) => _$UserResponseFromJson(json);
+
   Map<String, dynamic> toJson() => _$UserResponseToJson(this);
 }
 
@@ -212,7 +242,9 @@ class UserLogin{
     required this.email,
     required this.password
   });
+
   factory UserLogin.fromJson(Map<String, dynamic> json) => _$UserLoginFromJson(json);
+
   Map<String, dynamic> toJson() => _$UserLoginToJson(this);
 }
 
@@ -236,6 +268,8 @@ class UpdateUser{
     required this.active,
     required this.activation_Code,
   });
+
   factory UpdateUser.fromJson(Map<String, dynamic> json) => _$UpdateUserFromJson(json);
+
   Map<String, dynamic> toJson() => _$UpdateUserToJson(this);
 }

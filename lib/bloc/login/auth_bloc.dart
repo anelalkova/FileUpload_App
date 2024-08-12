@@ -1,65 +1,88 @@
-//The BLoC class handles the business logic by mapping events to states.
+import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import '../../network/api_service.dart';
-import '../../network/data_service.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
+import 'package:file_upload_app_part2/network/api_service.dart';
+import 'package:file_upload_app_part2/network/data_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final DataService dataService;
+part 'auth_event.dart';
+part 'auth_state.dart';
 
-  AuthBloc({required this.dataService}) : super(AuthInitial()) {
-    on<LoginEvent>((event, emit) async {
-      emit(AuthLoading());
-      try {
-        var response = await dataService.getUserByEmailFromAPI(event.email);
-        if (response.success) {
-          var user = response.result;
-          if (user != null && user.password == event.password) {
-            emit(AuthSuccess(message: "Login successful"));
-          } else {
-            emit(AuthFailure(error: "Incorrect password"));
-          }
-        } else {
-          emit(AuthFailure(error: "Email not found"));
-        }
-      } catch (e) {
-        emit(AuthFailure(error: e.toString()));
+class AuthBloc extends Bloc<AuthEvent, AuthState>{
+  AuthBloc() : super(const AuthInitial()){
+    on<LoginButtonPressed>(login);
+    on<RegisterAndSendVerificationCode>(signup);
+    on<ReturnInitialState>(returnToInitialState);
+    on<AutoLogin>(autoLogin);
+    on<RequestPermissions>(requestPermissions);
+  }
+
+  Future<void> returnToInitialState(ReturnInitialState event, Emitter<AuthState> emit)async{
+    emit(const AuthInitial());
+  }
+
+  FutureOr<void> signup(RegisterAndSendVerificationCode event, Emitter <AuthState> emit)async{
+    emit(AuthLoading());
+    var response = await DataService().registerUser(RegisterUserRequest(email: event.email, name: event.name, password: event.password));
+    var storage = const FlutterSecureStorage();
+
+    if(response.success) {
+      emit(AuthRegisteredSuccessfully());
+      await storage.write(key: 'email', value: event.email);
+      await storage.write(key: 'password', value: event.password);
+    }else{
+      emit(const AuthFailure(error: 'The user already exists, please login or try to register with a different email.'));
+    }
+  }
+
+  FutureOr<void> login(LoginButtonPressed event, Emitter <AuthState> emit)async{
+    emit(AuthLoading());
+    var response = await DataService().userLogin(UserLogin(email: event.email, password: event.password));
+    var storage = const FlutterSecureStorage();
+
+    if(response.success){
+      emit(AuthSuccess());
+      await storage.write(key: 'email', value: event.email);
+      await storage.write(key: 'password', value: event.password);
+    }else{
+      emit(const AuthFailure(error: 'Incorrect email or password. Please try again.'));
+    }
+  }
+
+  FutureOr<void>autoLogin(AutoLogin event, Emitter <AuthState> emit)async{
+    const storage = FlutterSecureStorage();
+
+    //Check if the user is already logged in
+    String? email = await storage.read(key: 'email');
+    String? password = await storage.read(key: 'password');
+    bool userLoggedIn = email !=  null && password != null;
+
+    if(!userLoggedIn){
+      emit(const AuthInitial(triedToAutoLogin: true));
+      return;
+    }
+
+    var response = await DataService().userLogin(UserLogin(email: email, password: password));
+
+    if(response.success){
+      await storage.write(key: 'email', value: email);
+      await storage.write(key: 'password', value: password);
+
+      if(state is AuthState){
+        return;
       }
-    });
 
-    on<RegisterEvent>((event, emit) async {
-      emit(AuthLoading());
-      try {
-        var registerUserRequest = RegisterUserRequest(
-          email: event.email,
-          name: event.name,
-          password: event.password,
-        );
-        final result = await dataService.registerUser(registerUserRequest);
-        if (result.success) {
-          emit(AuthSuccess(message: "Registration successful. Please check your email for verification link."));
-        } else {
-          emit(AuthFailure(error: result.error!));
-        }
-      } catch (e) {
-        emit(AuthFailure(error: e.toString()));
-      }
-    });
+      emit(AutoLoginSuccess());
+    }else{
+      emit(const AuthInitial(triedToAutoLogin: true));
+    }
+  }
 
-    on<ResendVerificationLinkEvent>((event, emit) async {
-      emit(AuthLoading());
-      try {
-        var result = await dataService.resendVerificationLink(event.email);
-        if (result.success) {
-          emit(AuthSuccess(message: "Verification link resent!"));
-        } else {
-          emit(AuthFailure(error: "Failed to resend verification link."));
-        }
-      } catch (e) {
-        emit(AuthFailure(error: e.toString()));
-      }
-    });
+  Future<void> requestPermissions(RequestPermissions event, Emitter<AuthState> emit)async {
+    var requests = await[
+      Permission.camera,
+    ].request();
   }
 }

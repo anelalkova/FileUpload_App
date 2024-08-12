@@ -1,24 +1,40 @@
-//Events are actions that can occur in the app. They are inputs to the BLoC.
+part of 'auth_bloc.dart';
 
+@immutable
 abstract class AuthEvent {}
 
-class LoginEvent extends AuthEvent {
+class LoginButtonPressed extends AuthEvent{
   final String email;
   final String password;
 
-  LoginEvent({required this.email, required this.password});
+  LoginButtonPressed({
+    required this.email,
+    required this.password,
+  });
 }
 
-class RegisterEvent extends AuthEvent {
+class RegisterAndSendVerificationCode extends AuthEvent{
   final String email;
+  final String password;
   final String name;
-  final String password;
 
-  RegisterEvent({required this.email, required this.name, required this.password});
+  RegisterAndSendVerificationCode({
+    required this.email,
+    required this.password,
+    required this.name,
+  });
 }
 
-class ResendVerificationLinkEvent extends AuthEvent {
+class ReturnInitialState extends AuthEvent {}
+
+class AutoLogin extends AuthEvent {}
+
+class ForgotPassword extends AuthEvent {
   final String email;
 
-  ResendVerificationLinkEvent({required this.email});
+  ForgotPassword({
+    required this.email,
+  });
 }
+
+class RequestPermissions extends AuthEvent {}

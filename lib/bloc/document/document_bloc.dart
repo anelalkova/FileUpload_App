@@ -51,10 +51,18 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
     emit(state.copyWith(userDocuments: document));
   }
 
-  FutureOr<void> getDocumentTypes(GetDocumentType event, Emitter<DocumentState> emit)async{
-    List<DocumentTypeModel> documentTypes = await DataService().getDocumentTypesBLOC();
-
+  FutureOr<void> getDocumentTypes(GetDocumentType event, Emitter<DocumentState> emit) async {
+    try {
+      List<DocumentTypeModel> documentTypes = await DataService().getDocumentTypesBLOC();
+      emit(state.copyWith(allDocumentTypes: documentTypes));
+    } catch (error) {
+      emit(state.copyWith(
+          errorWhileAddingDocument: true,
+          errorMessageWhileAddingDocument: error.toString()
+      ));
+    }
   }
+
 
   void errorWhileAddingDocument(ErrorWhileAddingDocument event, Emitter<DocumentState> emit) async{
     emit(state.copyWith(errorWhileAddingDocument: true, errorMessageWhileAddingDocument: event.error, wantToAdd: false));

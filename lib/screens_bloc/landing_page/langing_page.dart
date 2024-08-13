@@ -59,7 +59,7 @@ class LandingPage extends StatelessWidget{
                     child: Padding(
                       padding: EdgeInsets.all(30.0),
                       child: Material(
-                        color: Colors.transparent,
+                        color: Color.fromRGBO(242, 235, 251, 1),
                         elevation: 10,
                         borderRadius: BorderRadius.circular(20.0),
                         child: ClipRRect(
@@ -67,7 +67,9 @@ class LandingPage extends StatelessWidget{
                           child: BottomNavigationBar(
                             items: bottomNavItems,
                             currentIndex: state.tabIndex,
-                            backgroundColor: Colors.transparent,
+                            backgroundColor: Color.fromRGBO(212, 187, 252, 0.8),
+                            selectedItemColor: Colors.white,
+                            unselectedItemColor: Colors.grey,
                             onTap: (int index) {
                               int duration = 200;
                              /* if((currentIndex - index).abs() > 1){

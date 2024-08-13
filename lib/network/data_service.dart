@@ -336,17 +336,15 @@ class DataService {
           .toList();
   }
 
-  Future<List<DocumentModel>> getDocumentsBLOC(int user_id) async{
+  Future<List<DocumentModel>> getDocumentsBLOC(int user_id) async {
     var fetchedDocuments = await getDocumentsByUser(user_id);
-    if(!fetchedDocuments.success){
+    if (!fetchedDocuments.success) {
       print("Error fetching data: ${fetchedDocuments.error.toString()}");
       throw Error();
     }
     List<DocumentsResponse> documents = fetchedDocuments.result!;
 
-    List<DocumentTypeModel> documentTypes = await getDocumentTypesBLOC();
-
-    return documents
+    List<DocumentModel> documentModels = documents
         .map((document) => DocumentModel(
         id: document.id,
         description: document.description,
@@ -354,6 +352,10 @@ class DataService {
         document_type_id: document.documentTypeId,
         timestamp: document.timestamp))
         .toList();
+
+    documentModels.sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
+
+    return documentModels;
   }
 
   Future<Response<List<DocumentsResponse>>> getDocumentsByUserBLOC(int userId) async {
@@ -365,6 +367,16 @@ class DataService {
     } catch (e) {
       print('Error fetching documents: $e');
       return Response(success: false, error: e.toString());
+    }
+  }
+
+  Future<Response<void>> deleteUser(int userId) async{
+    ApiService apiResponse = ApiService(Dio());
+    try{
+      await apiResponse.deleteUser(userId);
+      return Response(success: true);
+    }catch(e){
+      return Response(success: false);
     }
   }
 }

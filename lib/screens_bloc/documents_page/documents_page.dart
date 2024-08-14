@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // Import the package
 import '../../bloc/document/document_bloc.dart';
 import 'create_document_dialog.dart';
 

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'api_service.g.dart';
@@ -38,6 +37,9 @@ abstract class ApiService {
 
   @GET('/api/DocumentTypes')
   Future<List<DocumentTypesResponse>> getDocumentTypes();
+
+  @GET('/api/Documents/GetDocumentSize/{document_id}')
+  Future<int> getDocumentSize(@Path('document_id') int id);
 
   //POST REQUESTS
   @POST('/api/Documents')

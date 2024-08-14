@@ -34,12 +34,11 @@ class DeleteAccount extends AccountEvent {
 
 class DeactivateAccount extends AccountEvent {
   final int id;
-  final UpdateUser user;
 
-  DeactivateAccount({required this.id, required this.user});
+  DeactivateAccount({required this.id});
 
   @override
-  List<Object?> get props => [id, user];
+  List<Object?> get props => [id];
 }
 
 class UpdateAccount extends AccountEvent {
@@ -50,4 +49,13 @@ class UpdateAccount extends AccountEvent {
 
   @override
   List<Object?> get props => [id, user];
+}
+
+class LogoutButtonPressed extends AccountEvent{
+  bool userWantsToLogout;
+
+  LogoutButtonPressed({required this.userWantsToLogout});
+
+  @override
+  List<Object?> get props => [userWantsToLogout];
 }

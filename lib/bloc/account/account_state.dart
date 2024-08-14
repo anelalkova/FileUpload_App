@@ -7,6 +7,7 @@ class AccountState extends Equatable {
   final bool updateSuccess;
   final bool deleteSuccess;
   final bool deactivateSuccess;
+  final bool logoutSuccess;
 
   const AccountState({
     this.wantsToUpdateAccount = false,
@@ -15,6 +16,7 @@ class AccountState extends Equatable {
     this.updateSuccess = false,
     this.deleteSuccess = false,
     this.deactivateSuccess = false,
+    this.logoutSuccess = false,
   });
 
   AccountState copyWith({
@@ -24,6 +26,7 @@ class AccountState extends Equatable {
     bool? updateSuccess,
     bool? deleteSuccess,
     bool? deactivateSuccess,
+    bool? logoutSuccess,
   }) {
     return AccountState(
       wantsToUpdateAccount: wantsToUpdateAccount ?? this.wantsToUpdateAccount,
@@ -32,6 +35,7 @@ class AccountState extends Equatable {
       updateSuccess: updateSuccess ?? this.updateSuccess,
       deleteSuccess: deleteSuccess ?? this.deleteSuccess,
       deactivateSuccess: deactivateSuccess ?? this.deactivateSuccess,
+      logoutSuccess: logoutSuccess ?? this.logoutSuccess,
     );
   }
 
@@ -43,6 +47,7 @@ class AccountState extends Equatable {
     updateSuccess,
     deleteSuccess,
     deactivateSuccess,
+    logoutSuccess
   ];
 }
 

@@ -129,7 +129,7 @@ class __LoginFormState extends State<_LoginForm> {
       if (state is AuthSuccess) {
         completer.complete(null);
       } else if (state is AuthFailure) {
-        completer.complete('Incorrect email or password. Please try again.');
+        completer.complete(state.error);
       }
     });
 
@@ -137,14 +137,28 @@ class __LoginFormState extends State<_LoginForm> {
     subscription.cancel();
 
     if (result == null) {
-      final FlutterSecureStorage storage = FlutterSecureStorage();
-      var result = await DataService().getUserByEmailFromAPI(_emailController.text);
-      int user_id = result.result!.id;
-      storage.write(key: 'user_id', value: user_id.toString());
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LandingPage()),
-      );
+      try {
+        final FlutterSecureStorage storage = FlutterSecureStorage();
+        var userResult = await DataService().getUserByEmailFromAPI(_emailController.text);
+
+        if (userResult.result != null) {
+          int userId = userResult.result!.id;
+          await storage.write(key: 'user_id', value: userId.toString());
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LandingPage()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('User details could not be fetched.')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: ${e.toString()}')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result)),

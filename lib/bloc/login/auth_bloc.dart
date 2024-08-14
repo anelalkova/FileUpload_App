@@ -47,14 +47,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       await storage.write(key: 'email', value: event.email);
       await storage.write(key: 'password', value: event.password);
     }else{
-      emit(const AuthFailure(error: 'Incorrect email or password. Please try again.'));
+      emit(AuthFailure(error: response.error ?? 'Unknown error occurred'));
     }
   }
 
   FutureOr<void>autoLogin(AutoLogin event, Emitter <AuthState> emit)async{
     const storage = FlutterSecureStorage();
 
-    //Check if the user is already logged in
     String? email = await storage.read(key: 'email');
     String? password = await storage.read(key: 'password');
     bool userLoggedIn = email !=  null && password != null;

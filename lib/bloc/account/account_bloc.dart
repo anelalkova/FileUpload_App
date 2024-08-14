@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../network/api_service.dart';
 
@@ -12,6 +13,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<UpdateAccount>(userWantsToUpdateAccount);
     on<DeleteAccount>(userWantsToDeleteAccount);
     on<DeactivateAccount>(userWantsToDeactivateAccount);
+    on<LogoutButtonPressed>(userWantsToLogout);
   }
 
   Future<void> userWantsToUpdateAccount(UpdateAccount event, Emitter<AccountState> emit) async {
@@ -44,6 +46,18 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       emit(state.copyWith(deactivateSuccess: false));
     } finally {
       emit(state.copyWith(wantsToDeactivateAccount: false));
+    }
+  }
+
+  Future<void> userWantsToLogout(LogoutButtonPressed event, Emitter<AccountState> emit) async {
+    try {
+      final storage = FlutterSecureStorage();
+      await storage.deleteAll();
+      emit(state.copyWith(logoutSuccess: true));
+    } catch (e) {
+      emit(state.copyWith(logoutSuccess: false));
+    } finally {
+      emit(state.copyWith(logoutSuccess: false));
     }
   }
 }

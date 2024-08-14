@@ -1,5 +1,7 @@
+import 'package:file_upload_app_part2/bloc/account/account_bloc.dart';
 import 'package:file_upload_app_part2/bloc/login/auth_bloc.dart';
 import 'package:file_upload_app_part2/bloc/main/landing_page_bloc.dart';
+import 'package:file_upload_app_part2/screens_bloc/account_page/account_page.dart';
 import 'package:file_upload_app_part2/screens_bloc/auth/login/login.dart';
 import 'package:file_upload_app_part2/screens_bloc/documents_page/documents_page.dart';
 import 'package:file_upload_app_part2/screens_bloc/landing_page/langing_page.dart';
@@ -13,6 +15,8 @@ class RouteGenerator{
   final landingPageBLoc = LandingPageBloc();
   final loginPageBloc = AuthBloc();
   final documentsPageBloc = DocumentBloc();
+  final accountPageBloc = AccountBloc();
+
   Route<dynamic> generateRoute(RouteSettings settings){
     switch(settings.name){
       case '/':
@@ -33,9 +37,16 @@ class RouteGenerator{
           return MaterialPageRoute(
               builder: (_) => BlocProvider<DocumentBloc>.value(
                   value: documentsPageBloc,
-                  child: DocumentsPage(),
+                  child: const DocumentsPage(),
               )
           );
+      case '/account_page':
+        return MaterialPageRoute(
+            builder: (_) => BlocProvider<AccountBloc>.value(
+                value: accountPageBloc,
+                child: AccountPage(),
+            )
+        );
       default:
         return _errorRoute();
     }

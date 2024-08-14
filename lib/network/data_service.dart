@@ -44,13 +44,26 @@ class DataService {
     }
   }
 
-  Future<Response<int>> userLogin(UserLogin user)async{
+  Future<Response<int>> userLogin(UserLogin user) async {
     ApiService apiResponse = ApiService(Dio());
-    try{
+
+    try {
       var result = await apiResponse.userLogin(user);
       return Response(success: true, result: result);
-    }catch (e){
-      return Response(success: false, error: e.toString());
+    } catch (e) {
+      String? errorMessage;
+
+      if (e is DioException) {
+        if (e.response != null && e.response?.data != null) {
+          errorMessage = e.response?.data.toString();
+        } else {
+          errorMessage = e.message;
+        }
+      } else {
+        errorMessage = e.toString();
+      }
+
+      return Response(success: false, error: errorMessage);
     }
   }
 
@@ -377,6 +390,16 @@ class DataService {
       return Response(success: true);
     }catch(e){
       return Response(success: false);
+    }
+  }
+
+  Future<Response<int>> getDocumentSizeBLOC(int id) async{
+    ApiService apiResponse = ApiService(Dio());
+    try{
+      var result = await apiResponse.getDocumentSize(id);
+      return Response(success: true, result: result);
+    }catch(e){
+      return Response(success: false, error: e.toString());
     }
   }
 }

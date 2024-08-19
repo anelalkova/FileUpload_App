@@ -33,22 +33,38 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
     emit(state.copyWith(wantToAdd: event.wantToAdd));
   }
 
-  void addDocumentEvent(AddDocument event, Emitter<DocumentState> emit)async{
-    try{
-      DataService().createDocument(CreateDocumentRequest(id: event.document.id, description: event.document.description, documentTypeId: event.document.document_type_id, userId: event.document.user_id, timestamp: event.document.timestamp));
-      List<DocumentModel> currentDocuments = state.userDocuments;
+  void addDocumentEvent(AddDocument event, Emitter<DocumentState> emit) async {
+    try {
+      DataService().createDocument(CreateDocumentRequest(
+        id: event.document.id,
+        description: event.document.description,
+        documentTypeId: event.document.document_type_id,
+        userId: event.document.user_id,
+        timestamp: event.document.timestamp,
+      ));
+
+      List<DocumentModel> currentDocuments = List.from(state.userDocuments);
       currentDocuments.add(event.document);
-      emit(state.copyWith(wantToAdd: false, errorMessageWhileAddingDocument: null, errorWhileAddingDocument: false, userDocuments: currentDocuments));
-    } catch(error){
-      emit(state.copyWith(wantToAdd: false, errorWhileAddingDocument: true, errorMessageWhileAddingDocument: error.toString()));
-      return;
+
+      emit(state.copyWith(
+        wantToAdd: false,
+        errorMessageWhileAddingDocument: null,
+        errorWhileAddingDocument: false,
+        userDocuments: currentDocuments,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        wantToAdd: false,
+        errorWhileAddingDocument: true,
+        errorMessageWhileAddingDocument: error.toString(),
+      ));
     }
   }
 
   FutureOr<void> getDocuments(GetDocuments event, Emitter<DocumentState> emit)async{
     List<DocumentModel> documents = await DataService().getDocumentsBLOC(event.user_id);
     var document = documents.reversed.toList();
-    emit(state.copyWith(userDocuments: document));
+    emit(state.copyWith(userDocuments: document, loading: false));
   }
 
   FutureOr<void> getDocumentTypes(GetDocumentType event, Emitter<DocumentState> emit) async {
@@ -69,7 +85,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
   }
 
   void documentIsTapped(DocumentIsTapped event, Emitter<DocumentState> emit)async{
-    emit(state.copyWith(expandedIndex: event.index, documentId: event.documentId));
+    emit(state.copyWith(documentId: event.index));
   }
 
 }

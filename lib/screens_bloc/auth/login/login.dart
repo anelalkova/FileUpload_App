@@ -144,7 +144,6 @@ class __LoginFormState extends State<_LoginForm> {
         if (userResult.result != null) {
           int userId = userResult.result!.id;
           await storage.write(key: 'user_id', value: userId.toString());
-
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LandingPage()),

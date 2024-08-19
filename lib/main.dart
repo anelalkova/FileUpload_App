@@ -1,4 +1,5 @@
 import 'package:file_upload_app_part2/bloc/account/account_bloc.dart';
+import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
 import 'package:file_upload_app_part2/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget{
         BlocProvider(create: (_) => AuthBloc()),
         BlocProvider(create: (_) => DocumentBloc()),
         BlocProvider(create: (_) => AccountBloc()),
+        BlocProvider(create: (_) => FileBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

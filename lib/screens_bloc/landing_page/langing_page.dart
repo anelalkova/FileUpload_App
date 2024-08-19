@@ -33,7 +33,7 @@ class LandingPage extends StatelessWidget {
     return BlocConsumer<LandingPageBloc, LandingPageState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           body: Stack(
             children: [
               PageView.builder(

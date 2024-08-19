@@ -1,5 +1,4 @@
 import 'package:file_upload_app_part2/bloc/account/account_bloc.dart';
-import 'package:file_upload_app_part2/network/data_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -126,15 +125,6 @@ class AccountPage extends StatelessWidget{
               MaterialPageRoute(builder: (context) => LoginScreen()),
                   (route) => false,
             );
-          }
-          if(state is LogoutButtonPressed){
-            if(state.logoutSuccess){
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (route) => false,
-              );
-            }
           }
         }
     );

@@ -26,8 +26,8 @@ abstract class ApiService {
   @GET('/api/Documents/GetDocumentsByUser/{user_id}')
   Future<List<DocumentsResponse>> getDocumentsByUser(@Path('user_id') int userId);
 
-  @GET('/GetFilesByDocumentId/{document_id}')
-  Future<List<FilesResponse>> getFilesForDocument(@Path('document_id') int documentId);
+  @GET('/GetFilesByDocumentId/{documentId}')
+  Future<List<FilesResponse>> getFilesForDocument(@Path('documentId') int documentId);
 
   @GET('/User/{id}')
   Future<UserResponse> getUserById(@Path('id') int id);

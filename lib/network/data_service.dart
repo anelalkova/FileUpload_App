@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/document_type.dart';
+import '../models/file.dart';
 
 class DataService {
   Future<Response<List<DocumentsResponse>>> getDocumentsFromAPI() async {
@@ -401,6 +402,26 @@ class DataService {
     }catch(e){
       return Response(success: false, error: e.toString());
     }
+  }
+
+  Future<List<FileModel>>getFilesForDocumentBLOC(int documentId) async {
+    var fetchedFiles = await getFilesForDocument(documentId);
+    if (!fetchedFiles.success) {
+      print("Error fetching data: ${fetchedFiles.error.toString()}");
+      throw Error();
+    }
+    List<FilesResponse> files = fetchedFiles.result!;
+
+    List<FileModel> fileModels = files
+        .map((file) => FileModel(
+      id: file.id,
+      file_name: file.fileName,
+      path: file.path,
+      document_id: file.documentId,
+      document_type_id: file.documentTypeId,
+    )).toList();
+
+    return fileModels;
   }
 }
 

@@ -1,9 +1,11 @@
+import 'package:file_upload_app_part2/screens_bloc/files_page/files_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../bloc/document/document_bloc.dart';
+import '../../bloc/file/file_bloc.dart';
 import 'create_document_dialog.dart';
 
 class DocumentsPage extends StatelessWidget {
@@ -83,8 +85,16 @@ class DocumentsPage extends StatelessWidget {
                     title: Text(document.description),
                     subtitle: Text(_formatTimestamp(document.timestamp!)),
                     onTap: () {
-                      BlocProvider.of<DocumentBloc>(context)
-                          .add(DocumentIsTapped(index: index, documentId: document.id));
+                      BlocProvider.of<DocumentBloc>(context).add(DocumentIsTapped(
+                        index: document.id,
+                      ));
+                      BlocProvider.of<FileBloc>(context).add(LoadFiles(loading: true));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FilePage(),
+                        ),
+                      );
                     },
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),

@@ -37,9 +37,8 @@ class ErrorWhileAddingDocument extends DocumentEvent {
 
 class DocumentIsTapped extends DocumentEvent {
   final int index;
-  final int documentId;
 
-  DocumentIsTapped({required this.index, required this.documentId});
+  DocumentIsTapped({required this.index});
 }
 
 class DeleteDocument extends DocumentEvent{
@@ -48,3 +47,8 @@ class DeleteDocument extends DocumentEvent{
   DeleteDocument({required this.id});
 }
 
+class LoadingDocuments extends DocumentEvent{
+  final bool loading;
+
+  LoadingDocuments({required this.loading});
+}

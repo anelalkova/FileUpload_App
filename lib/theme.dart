@@ -5,7 +5,7 @@ var appTheme = ThemeData(
   fontFamily: GoogleFonts.geologica().fontFamily,
   brightness: Brightness.light,
   iconTheme: const IconThemeData(color: Colors.black),
-  // scaffoldBackgroundColor: Colors.white,
+  scaffoldBackgroundColor: Colors.white,
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: Colors.transparent,
     selectedItemColor: Colors.blueAccent[200],

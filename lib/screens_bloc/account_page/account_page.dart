@@ -6,6 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/login/login.dart';
 
 class AccountPage extends StatelessWidget{
+  const AccountPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AccountBloc, AccountState>(
@@ -71,16 +73,16 @@ class AccountPage extends StatelessWidget{
                         ),
                       ],
                     ),
-                    SizedBox(width: 200),
-                    SizedBox(width: 200),
+                    const SizedBox(width: 200),
+                    const SizedBox(width: 200),
                     const SizedBox(height: 10),
                     const SizedBox(height: 30),
                     const Divider(),
-                    Text("Documents Archive cloud storage used: "),
+                    const Text("Documents Archive cloud storage used: "),
                     ElevatedButton(
                         onPressed: () => {
                         },
-                        child: Text("Edit Account")
+                        child: const Text("Edit Account")
                     ),
                     ElevatedButton(
                         onPressed: () async {
@@ -95,11 +97,11 @@ class AccountPage extends StatelessWidget{
                             );
                           }
                         },
-                        child: Text("Deactivate Account")
+                        child: const Text("Deactivate Account")
                     ),
                     ElevatedButton(
                         onPressed: () => "",
-                        child: Text("Delete Account")
+                        child: const Text("Delete Account")
                     ),
                     ElevatedButton(
                         onPressed: () => {
@@ -107,11 +109,11 @@ class AccountPage extends StatelessWidget{
                             LogoutButtonPressed(userWantsToLogout: true)
                           )
                         },
-                        child: Text("Log out")
+                        child: const Text("Log out")
                     ),
                     const SizedBox(height: 10),
-                    SizedBox(width: 200),
-                    SizedBox(width: 200),
+                    const SizedBox(width: 200),
+                    const SizedBox(width: 200),
                   ],
                 ),
               ),
@@ -122,7 +124,7 @@ class AccountPage extends StatelessWidget{
           if (state.logoutSuccess) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
                   (route) => false,
             );
           }

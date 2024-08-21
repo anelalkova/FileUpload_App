@@ -99,7 +99,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
               SizedBox(
                 width: 100,
                 height: 100,

@@ -86,13 +86,14 @@ class DocumentsPage extends StatelessWidget {
                     subtitle: Text(_formatTimestamp(document.timestamp!)),
                     onTap: () {
                       BlocProvider.of<DocumentBloc>(context).add(DocumentIsTapped(
-                        index: document.id,
+                        documentId: document.id,
+                        documentTypeId: document.document_type_id
                       ));
-                      BlocProvider.of<FileBloc>(context).add(LoadFiles(loading: true));
+                      BlocProvider.of<FileBloc>(context).add(LoadFiles(loading: true, documentId: document.id, documentTypeId: document.document_type_id));
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FilePage(),
+                          builder: (context) => const FilePage(),
                         ),
                       );
                     },

@@ -199,7 +199,7 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isOcr ? 'Image to OCR' : 'Image to PDF',
-          style: TextStyle(fontWeight: FontWeight.w600)),
+          style: const TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -222,7 +222,7 @@ class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
+                child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.65,
                   child: _imageFiles.isEmpty
                       ? Center(

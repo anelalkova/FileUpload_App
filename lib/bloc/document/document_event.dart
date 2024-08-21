@@ -36,9 +36,10 @@ class ErrorWhileAddingDocument extends DocumentEvent {
 }
 
 class DocumentIsTapped extends DocumentEvent {
-  final int index;
+  final int documentId;
+  final int documentTypeId;
 
-  DocumentIsTapped({required this.index});
+  DocumentIsTapped({required this.documentId, required this.documentTypeId});
 }
 
 class DeleteDocument extends DocumentEvent{

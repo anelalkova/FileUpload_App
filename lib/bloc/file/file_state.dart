@@ -1,6 +1,6 @@
 part of 'file_bloc.dart';
 
-class FileState extends Equatable{
+class FileState extends Equatable {
   final bool wantToAdd;
   final List<FileModel> allFilesForDocument;
   final FileModel file;
@@ -8,22 +8,32 @@ class FileState extends Equatable{
   final String errorMessageWhileAddingFile;
   final int fileId;
   final bool isOcr;
-  final int index;
   final bool loading;
   final String fileUploadSuccess;
+  final Uint8List pdfFile;
+  final bool errorWhileLoadingFile;
+  final String errorMessageWhileLoadingFile;
+  final ImageSource imageSource;
+  final List<File> imageFiles;
+  final String fileName;
 
-  const FileState({
+  FileState({
     this.wantToAdd = false,
-    this.allFilesForDocument = const[],
+    this.allFilesForDocument = const [],
     this.file = const FileModel(id: -1, file_name: "", path: "", document_id: -1, document_type_id: -1),
     this.errorMessageWhileAddingFile = "",
     this.errorWhileAddingFile = false,
     this.fileId = -1,
     this.isOcr = false,
-    this.index = -1,
     this.loading = false,
-    this.fileUploadSuccess = ""
-  });
+    this.fileUploadSuccess = "",
+    Uint8List? pdfFile,
+    this.errorWhileLoadingFile = false,
+    this.errorMessageWhileLoadingFile = "",
+    this.imageSource = ImageSource.camera,
+    this.imageFiles = const [],
+    this.fileName = ""
+  }) : pdfFile = pdfFile ?? Uint8List(0);
 
   FileState copyWith({
     bool? wantToAdd,
@@ -33,26 +43,39 @@ class FileState extends Equatable{
     String? errorMessageWhileAddingFile,
     int? fileId,
     bool? isOcr,
-    int? index,
     bool? loading,
-    String? fileUploadSuccess
-  }){
+    String? fileUploadSuccess,
+    Uint8List? pdfFile,
+    bool? errorWhileLoadingFile,
+    String? errorMessageWhileLoadingFile,
+    ImageSource? imageSource,
+    List<File>? imageFiles,
+    String? fileName,
+  }) {
     return FileState(
-      wantToAdd: wantToAdd ?? this.wantToAdd,
-      allFilesForDocument: allFilesForDocument ?? List.from(this.allFilesForDocument),
-      file: file ?? this.file,
-      errorMessageWhileAddingFile: errorMessageWhileAddingFile ?? this.errorMessageWhileAddingFile,
-      errorWhileAddingFile: errorWhileAddingFile ?? this.errorWhileAddingFile,
-      fileId: fileId ?? this.fileId,
-      isOcr: isOcr ?? this.isOcr,
-      index: index ?? this.index,
-      loading: loading ?? this.loading,
-      fileUploadSuccess: fileUploadSuccess ?? this.fileUploadSuccess
+        wantToAdd: wantToAdd ?? this.wantToAdd,
+        allFilesForDocument: allFilesForDocument ??
+            List.from(this.allFilesForDocument),
+        file: file ?? this.file,
+        errorMessageWhileAddingFile: errorMessageWhileAddingFile ??
+            this.errorMessageWhileAddingFile,
+        errorWhileAddingFile: errorWhileAddingFile ?? this.errorWhileAddingFile,
+        fileId: fileId ?? this.fileId,
+        isOcr: isOcr ?? this.isOcr,
+        loading: loading ?? this.loading,
+        fileUploadSuccess: fileUploadSuccess ?? this.fileUploadSuccess,
+        pdfFile: pdfFile ?? this.pdfFile,
+        errorMessageWhileLoadingFile: errorMessageWhileLoadingFile ??
+            this.errorMessageWhileLoadingFile,
+        errorWhileLoadingFile: errorWhileLoadingFile ??
+            this.errorWhileLoadingFile,
+        imageSource: imageSource ?? this.imageSource,
+        imageFiles: imageFiles ?? this.imageFiles,
+        fileName: fileName ?? this.fileName
     );
   }
 
   @override
-  // TODO: implement props
   List<Object?> get props => [
     wantToAdd,
     allFilesForDocument,
@@ -61,14 +84,19 @@ class FileState extends Equatable{
     errorMessageWhileAddingFile,
     fileId,
     isOcr,
-    index,
     loading,
     fileUploadSuccess,
+    pdfFile,
+    errorWhileLoadingFile,
+    errorMessageWhileLoadingFile,
+    imageSource,
+    imageFiles,
+    fileName
   ];
 }
 
-final class FileStateInitial extends FileState{
-  const FileStateInitial({
+final class FileStateInitial extends FileState {
+  FileStateInitial({
     super.wantToAdd,
     super.allFilesForDocument,
     super.file,
@@ -76,8 +104,13 @@ final class FileStateInitial extends FileState{
     super.errorWhileAddingFile,
     super.fileId,
     super.isOcr,
-    super.index,
     super.loading,
-    super.fileUploadSuccess
+    super.fileUploadSuccess,
+    super.pdfFile,
+    super.errorMessageWhileLoadingFile,
+    super.errorWhileLoadingFile,
+    super.imageSource,
+    super.imageFiles,
+    super.fileName
   });
 }

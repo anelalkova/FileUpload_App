@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:file_upload_app_part2/screens_bloc/files_page/create_pdf_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/file/file_bloc.dart';
 
 class CreateFileDialog extends StatelessWidget{
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController documentNameController = TextEditingController();
 
   CreateFileDialog({super.key});
 
@@ -49,7 +54,11 @@ class CreateFileDialog extends StatelessWidget{
                             height: 70.0,
                           ),
                           onPressed: () {
-//                            Navigator.of(context).pop();
+                            BlocProvider.of<FileBloc>(context).add(UserWantsToAddFile(wantToAdd: true));
+                            BlocProvider.of<FileBloc>(context).add(FileType(isOcr: false));
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => CreatePdfPage())
+                            );
                           },
                         ),
                         const SizedBox(height: 8),

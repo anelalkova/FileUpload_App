@@ -37,7 +37,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
         title: const Text('PDF View', style: TextStyle(fontWeight: FontWeight.w500)),
       ),
       body: Container(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         alignment: Alignment.center,
         height: 550,
         color: Colors.grey[100],
@@ -62,15 +62,15 @@ class _PDFViewPageState extends State<PDFViewPage> {
                     right: 12,
                     child: Container(
                       width: 100,
-                      padding: EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.all(5.0),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15.0),
-                        color: Color.fromRGBO(217, 216, 222, 0.4),
+                        color: const Color.fromRGBO(217, 216, 222, 0.4),
                       ),
                         child: Text(
                         'Page ${_currentPage + 1} of $_totalPages',
-                        style: TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w400, ),
+                        style: const TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w400, ),
                       ),
                     )
                   ),

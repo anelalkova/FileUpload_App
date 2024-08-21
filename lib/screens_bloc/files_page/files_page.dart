@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:file_upload_app_part2/bloc/document/document_bloc.dart';
 import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
+import 'package:file_upload_app_part2/screens_bloc/files_page/file_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,18 +11,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'create_file_dialog.dart';
 
 class FilePage extends StatelessWidget {
-  FilePage({super.key});
+  const FilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<FileBloc, FileState>(
       builder: (context, state) {
-        final documentIndex = context.read<DocumentBloc>().state.documentId;
-
         if (state.loading) {
-          Timer.periodic(Duration(seconds: 1), (t) {
+          int r = Random().nextInt(3);
+          Timer.periodic(Duration(seconds: r), (t) {
             t.cancel();
-            context.read<FileBloc>().add(GetFiles(documentId: documentIndex));
+            context.read<FileBloc>().add(GetFiles(documentId: context.read<DocumentBloc>().state.documentId));
           });
         }
 
@@ -47,12 +48,11 @@ class FilePage extends StatelessWidget {
                         rotate: state.wantToAdd ? 90 : 0,
                         duration: const Duration(milliseconds: 300),
                         child: IconButton(
-                          onPressed: () {
-                            _showCreateFileDialog(context, state);
+                          onPressed: () async {
+                            await _showCreateFileDialog(context, state);
                             BlocProvider.of<FileBloc>(context).add(
                               UserWantsToAddFile(
                                 wantToAdd: !state.wantToAdd,
-                                isOcr: false,
                               ),
                             );
                           },
@@ -80,7 +80,16 @@ class FilePage extends StatelessWidget {
                     color: Colors.grey[700]),
                 title: Text(file.file_name),
                 subtitle: Text(file.path),
-                onTap: () {},
+                onTap: () {
+                  BlocProvider.of<FileBloc>(context).add(FileIsTapped(fileId: file.id));
+                  BlocProvider.of<FileBloc>(context).add(OpenFile(fileId: file.id));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FileViewPage(),
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -105,7 +114,6 @@ class FilePage extends StatelessWidget {
         return CreateFileDialog();
       },
     );
-    BlocProvider.of<FileBloc>(context).add(UserWantsToAddFile(wantToAdd: false, isOcr: false));
   }
 }
 

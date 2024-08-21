@@ -25,7 +25,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
   }
 
   Future<void> deleteDocument(DeleteDocument event, Emitter<DocumentState> emit) async{
-    DataService().deleteDocument(event.id);
+    await DataService().deleteDocument(event.id);
     emit(state.copyWith(userDocuments: state.userDocuments.where((element) => element.id != event.id).toList()));
   }
 
@@ -85,7 +85,6 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
   }
 
   void documentIsTapped(DocumentIsTapped event, Emitter<DocumentState> emit)async{
-    emit(state.copyWith(documentId: event.index));
+    emit(state.copyWith(documentId: event.documentId, documentTypeId: event.documentTypeId));
   }
-
 }

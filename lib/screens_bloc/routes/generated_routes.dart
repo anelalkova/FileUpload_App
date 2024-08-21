@@ -47,14 +47,14 @@ class RouteGenerator{
         return MaterialPageRoute(
             builder: (_) => BlocProvider<AccountBloc>.value(
                 value: accountPageBloc,
-                child: AccountPage(),
+                child: const AccountPage(),
             )
         );
       case '/file_page':
         return MaterialPageRoute(
             builder: (_) => BlocProvider<FileBloc>.value(
               value: filePageBloc,
-              child: FilePage(),
+              child: const FilePage(),
             )
         );
       default:

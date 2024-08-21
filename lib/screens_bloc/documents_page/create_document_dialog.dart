@@ -8,7 +8,7 @@ import '../../models/document.dart';
 class CreateDocumentDialog extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController documentNameController = TextEditingController();
-  DocumentTypeModel? selectedDocumentType = null;
+  DocumentTypeModel? selectedDocumentType;
 
   CreateDocumentDialog({super.key});
 

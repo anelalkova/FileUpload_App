@@ -51,7 +51,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   Future<void> userWantsToLogout(LogoutButtonPressed event, Emitter<AccountState> emit) async {
     try {
-      final storage = FlutterSecureStorage();
+      const storage = FlutterSecureStorage();
       await storage.deleteAll();
       emit(state.copyWith(logoutSuccess: true));
     } catch (e) {

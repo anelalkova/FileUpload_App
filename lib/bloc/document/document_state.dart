@@ -10,6 +10,7 @@ class DocumentState extends Equatable{
   final int expandedIndex;
   final int documentId;
   final bool loading;
+  final int documentTypeId;
 
   const DocumentState({
     this.wantToAdd = false,
@@ -20,7 +21,8 @@ class DocumentState extends Equatable{
     this.errorMessageWhileAddingDocument = '',
     this.expandedIndex = -1,
     this.documentId = -1,
-    this.loading = false
+    this.loading = false,
+    this.documentTypeId = -1
   });
 
   DocumentState copyWith({
@@ -32,6 +34,7 @@ class DocumentState extends Equatable{
     String? errorMessageWhileAddingDocument,
     int? expandedIndex,
     int? documentId,
+    int? documentTypeId,
     bool? loading
   }){
     return DocumentState(
@@ -43,7 +46,8 @@ class DocumentState extends Equatable{
       errorMessageWhileAddingDocument: errorMessageWhileAddingDocument ?? this.errorMessageWhileAddingDocument,
       expandedIndex: expandedIndex ?? this.expandedIndex,
       documentId: documentId ?? this.documentId,
-      loading: loading ?? this.loading
+      loading: loading ?? this.loading,
+        documentTypeId: documentTypeId ?? this.documentTypeId
     );
   }
 
@@ -57,7 +61,8 @@ class DocumentState extends Equatable{
     errorMessageWhileAddingDocument,
     expandedIndex,
     documentId,
-    loading
+    loading,
+    documentTypeId
   ];
 }
 
@@ -71,6 +76,7 @@ final class DocumentStateInitial extends DocumentState{
     super.errorMessageWhileAddingDocument,
     super.expandedIndex,
     super.documentId,
-    super.loading
+    super.loading,
+    super.documentTypeId
   });
 }

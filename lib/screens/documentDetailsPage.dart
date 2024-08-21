@@ -349,7 +349,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       ],
                     ),
                     child: ListTile(
-                      title: Text(_extractUserFileName(file.fileName), style: TextStyle(fontWeight: FontWeight.w500)),
+                      title: Text(_extractUserFileName(file.fileName), style: const TextStyle(fontWeight: FontWeight.w500)),
                       subtitle: Text(file.path),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,

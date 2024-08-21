@@ -350,8 +350,8 @@ class DataService {
           .toList();
   }
 
-  Future<List<DocumentModel>> getDocumentsBLOC(int user_id) async {
-    var fetchedDocuments = await getDocumentsByUser(user_id);
+  Future<List<DocumentModel>> getDocumentsBLOC(int userId) async {
+    var fetchedDocuments = await getDocumentsByUser(userId);
     if (!fetchedDocuments.success) {
       print("Error fetching data: ${fetchedDocuments.error.toString()}");
       throw Error();

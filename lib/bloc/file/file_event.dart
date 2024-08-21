@@ -7,9 +7,8 @@ class FileEvent extends Equatable{
 
 class UserWantsToAddFile extends FileEvent{
   final bool wantToAdd;
-  final bool isOcr;
 
-  UserWantsToAddFile({required this.wantToAdd, required this.isOcr});
+  UserWantsToAddFile({required this.wantToAdd});
 }
 
 class AddFile extends FileEvent{
@@ -46,11 +45,7 @@ class FileIsTapped extends FileEvent{
   FileIsTapped({required this.fileId});
 }
 
-class GeneratePdfEvent extends FileEvent{
-  final List<File> imageFiles;
-
-   GeneratePdfEvent({required this.imageFiles});
-}
+class GeneratePdfEvent extends FileEvent{}
 
 class UploadPdfEvent extends FileEvent{
   final File? pdfFile;
@@ -72,6 +67,49 @@ class UploadPdfEvent extends FileEvent{
 
 class LoadFiles extends FileEvent{
   final bool loading;
+  final int documentId;
+  final int documentTypeId;
 
-  LoadFiles({required this.loading});
+  LoadFiles({required this.loading, required this.documentId, required this.documentTypeId});
 }
+
+class OpenFile extends FileEvent{
+  final int fileId;
+
+  OpenFile({required this.fileId});
+}
+
+class ErrorWhileLoadingFile extends FileEvent {
+  final bool errorWhileLoadingFile;
+  final String errorMessageWhileLoadingFile;
+
+  ErrorWhileLoadingFile({
+    required this.errorWhileLoadingFile,
+    required this.errorMessageWhileLoadingFile
+  });
+}
+
+class PickImageSource extends FileEvent{
+  final ImageSource imageSource;
+
+  PickImageSource({required this.imageSource});
+}
+
+class AddImage extends FileEvent{
+  final File image;
+
+  AddImage({required this.image});
+}
+
+class SaveFileName extends FileEvent{
+  final String fileName;
+
+  SaveFileName({required this.fileName});
+}
+
+class FileType extends FileEvent{
+  final bool isOcr;
+
+  FileType({required this.isOcr});
+}
+

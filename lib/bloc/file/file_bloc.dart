@@ -7,16 +7,16 @@ import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:equatable/equatable.dart';
 
 part 'file_event.dart';
 part 'file_state.dart';
 
 class FileBloc extends Bloc<FileEvent, FileState> {
-  FileBloc() : super(const FileStateInitial()) {
+  FileBloc() : super(FileStateInitial()) {
     on<UserWantsToAddFile>(userWantsToAddFileEvent);
     on<AddFile>(addFileEvent);
     on<GetFiles>(getFilesEvent);
@@ -26,6 +26,12 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     on<GeneratePdfEvent>(generatePdfEvent);
     on<UploadPdfEvent>(uploadPdfEvent);
     on<LoadFiles>(loadFilesEvent);
+    on<OpenFile>(openFileEvent);
+    on<ErrorWhileLoadingFile>(errorWhileLoadingFileEvent);
+    on<AddImage>(addImageEvent);
+    on<PickImageSource>(pickImageSourceEvent);
+    on<SaveFileName>(saveFileNameEvent);
+    on<FileType>(chooseFileTypeEvent);
   }
 
   void loadFilesEvent(LoadFiles event, Emitter<FileState> emit)async{
@@ -39,7 +45,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
   }
 
   Future<void> userWantsToAddFileEvent(UserWantsToAddFile event, Emitter<FileState> emit) async {
-    emit(state.copyWith(wantToAdd: event.wantToAdd, isOcr: event.isOcr));
+    emit(state.copyWith(wantToAdd: event.wantToAdd));
   }
 
   Future<void> addFileEvent(AddFile event, Emitter<FileState> emit) async {
@@ -93,7 +99,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
       final fontData = await rootBundle.load('assets/OpenSans-VariableFont_wdth,wght.ttf');
       final ttf = pw.Font.ttf(fontData);
 
-      for (var imageFile in event.imageFiles) {
+      for (var imageFile in state.imageFiles) {
         final textRecognizer = TextRecognizer();
         final inputImage = InputImage.fromFile(imageFile);
         final recognizedText = await textRecognizer.processImage(inputImage);
@@ -145,7 +151,64 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     } catch (e) {
       emit(state.copyWith(errorMessageWhileAddingFile: 'Error uploading file: $e', errorWhileAddingFile: true));
     } finally {
+      emit(state.copyWith(loading: false, fileName: "", fileUploadSuccess: ""));
+    }
+  }
+
+  Future<void>openFileEvent(OpenFile event, Emitter<FileState>emit)async {
+    emit(state.copyWith(loading: true));
+    try {
+      final result = await DataService().getPDFBytes(event.fileId);
+      if (result.success) {
+        emit(state.copyWith(pdfFile: result.result));
+      } else {
+        emit(state.copyWith(errorWhileLoadingFile: true,
+            errorMessageWhileLoadingFile: result.error));
+      }
+      emit(state.copyWith(loading: false));
+    } catch (e) {
+      emit(state.copyWith(errorWhileLoadingFile: true,
+          errorMessageWhileLoadingFile: e.toString(), loading: false));
+    } finally {
       emit(state.copyWith(loading: false));
     }
+  }
+
+  void errorWhileLoadingFileEvent(ErrorWhileLoadingFile event, Emitter<FileState>emit)async{
+    emit(state.copyWith(errorWhileLoadingFile: true, errorMessageWhileLoadingFile: event.errorMessageWhileLoadingFile));
+  }
+
+  Future<void>pickImageSourceEvent(PickImageSource event, Emitter<FileState>emit)async{
+    emit(state.copyWith(imageSource: event.imageSource));
+  }
+
+  Future<void> addImageEvent(AddImage event, Emitter<FileState> emit) async {
+    emit(state.copyWith(loading: true));
+
+    try {
+      final updatedImageFiles = List<File>.from(state.imageFiles);
+      updatedImageFiles.add(event.image);
+
+      emit(state.copyWith(
+        imageFiles: updatedImageFiles,
+        loading: false,
+        errorWhileAddingFile: false,
+        errorMessageWhileAddingFile: "",
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        loading: false,
+        errorWhileAddingFile: true,
+        errorMessageWhileAddingFile: e.toString(),
+      ));
+    }
+  }
+
+  void saveFileNameEvent(SaveFileName event, Emitter<FileState> emit) async{
+    emit(state.copyWith(fileName: event.fileName));
+  }
+
+  void chooseFileTypeEvent(FileType event, Emitter<FileState>emit)async{
+    emit(state.copyWith(isOcr: event.isOcr));
   }
 }

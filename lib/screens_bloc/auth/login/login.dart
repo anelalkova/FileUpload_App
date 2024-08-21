@@ -138,7 +138,7 @@ class __LoginFormState extends State<_LoginForm> {
 
     if (result == null) {
       try {
-        final FlutterSecureStorage storage = FlutterSecureStorage();
+        const FlutterSecureStorage storage = FlutterSecureStorage();
         var userResult = await DataService().getUserByEmailFromAPI(_emailController.text);
 
         if (userResult.result != null) {
@@ -150,7 +150,7 @@ class __LoginFormState extends State<_LoginForm> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('User details could not be fetched.')),
+            const SnackBar(content: Text('User details could not be fetched.')),
           );
         }
       } catch (e) {
@@ -188,7 +188,7 @@ class _SignUpPrompt extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Don\'t have an account?'),
+        const Text('Don\'t have an account?'),
         TextButton(
           onPressed: () {
             Navigator.push(

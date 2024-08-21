@@ -19,8 +19,8 @@ List<BottomNavigationBarItem> bottomNavItems = const <BottomNavigationBarItem>[
 ];
 
 List<Widget> bottomNavScreens = <Widget>[
-  DocumentsPage(),
-  AccountPage(),
+  const DocumentsPage(),
+  const AccountPage(),
 ];
 
 class LandingPage extends StatelessWidget {

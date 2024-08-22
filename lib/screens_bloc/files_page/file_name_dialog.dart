@@ -33,7 +33,9 @@ class FileNameDialog extends StatelessWidget{
               BlocProvider.of<FileBloc>(context)
                   .add(SaveFileName(fileName: fileNameController.text));
               Navigator.of(context).pop();
-            }else ScaffoldMessenger(child: Text("Please enter file name"));
+            }else {
+              ScaffoldMessenger(child: Text("Please enter file name"));
+            }
           },
         ),
       ],

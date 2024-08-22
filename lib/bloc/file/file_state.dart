@@ -16,11 +16,12 @@ class FileState extends Equatable {
   final ImageSource imageSource;
   final List<File> imageFiles;
   final String fileName;
+  final bool isFileUploadSuccess;
 
   FileState({
     this.wantToAdd = false,
     this.allFilesForDocument = const [],
-    this.file = const FileModel(id: -1, file_name: "", path: "", document_id: -1, document_type_id: -1),
+    this.file = const FileModel(id: -1, file_name: "", path: "", document_id: -1, document_type_id: -1, file_size: 0),
     this.errorMessageWhileAddingFile = "",
     this.errorWhileAddingFile = false,
     this.fileId = -1,
@@ -32,7 +33,8 @@ class FileState extends Equatable {
     this.errorMessageWhileLoadingFile = "",
     this.imageSource = ImageSource.camera,
     this.imageFiles = const [],
-    this.fileName = ""
+    this.fileName = "",
+    this.isFileUploadSuccess = false
   }) : pdfFile = pdfFile ?? Uint8List(0);
 
   FileState copyWith({
@@ -51,6 +53,7 @@ class FileState extends Equatable {
     ImageSource? imageSource,
     List<File>? imageFiles,
     String? fileName,
+    bool? isFileUploadSuccess
   }) {
     return FileState(
         wantToAdd: wantToAdd ?? this.wantToAdd,
@@ -71,7 +74,8 @@ class FileState extends Equatable {
             this.errorWhileLoadingFile,
         imageSource: imageSource ?? this.imageSource,
         imageFiles: imageFiles ?? this.imageFiles,
-        fileName: fileName ?? this.fileName
+        fileName: fileName ?? this.fileName,
+        isFileUploadSuccess: isFileUploadSuccess ?? this.isFileUploadSuccess
     );
   }
 
@@ -91,7 +95,8 @@ class FileState extends Equatable {
     errorMessageWhileLoadingFile,
     imageSource,
     imageFiles,
-    fileName
+    fileName,
+    isFileUploadSuccess
   ];
 }
 
@@ -111,6 +116,7 @@ final class FileStateInitial extends FileState {
     super.errorWhileLoadingFile,
     super.imageSource,
     super.imageFiles,
-    super.fileName
+    super.fileName,
+    super.isFileUploadSuccess
   });
 }

@@ -20,6 +20,10 @@ class DocumentsPage extends StatelessWidget {
             SnackBar(content: Text('Error: ${state.errorMessageWhileAddingDocument}')),
           );
         }
+
+        if(!state.loading){
+
+        }
       },
       builder: (context, state) {
         if (state is DocumentStateInitial) {
@@ -35,45 +39,30 @@ class DocumentsPage extends StatelessWidget {
         }
 
         return Scaffold(
-          backgroundColor: const Color.fromRGBO(242, 235, 251, 1),
           appBar: AppBar(
+            title: const Text("Documents Archive"),
             actions: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 0, 24, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Documents Archive',
-                        style: TextStyle(
-                          color: Color.fromRGBO(88, 73, 111, 1),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      AnimatedIcon(
-                        rotate: state.wantToAdd ? 90 : 0,
-                        duration: const Duration(milliseconds: 300),
-                        child: IconButton(
-                          onPressed: () {
-                            _showCreateDocumentDialog(context, state);
-                            BlocProvider.of<DocumentBloc>(context).add(
-                                UserWantsToAddDocument(wantToAdd: !state.wantToAdd));
-                          },
-                          icon: const Icon(FontAwesomeIcons.plus),
-                        ),
-                      ),
-                    ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 24, 0),
+                child: AnimatedIcon(
+                  rotate: state.wantToAdd ? 90 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: IconButton(
+                    onPressed: () {
+                      _showCreateDocumentDialog(context, state);
+                      BlocProvider.of<DocumentBloc>(context).add(
+                          UserWantsToAddDocument(wantToAdd: !state.wantToAdd));
+                    },
+                    icon: const Icon(FontAwesomeIcons.plus),
                   ),
                 ),
-              ),
+              )
             ],
-            backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
             automaticallyImplyLeading: false,
           ),
-          body: state.userDocuments.isEmpty
+          body: state.loading
+              ? const Center(child: CircularProgressIndicator()) :
+              state.userDocuments.isEmpty
               ? const Center(child: Text('No documents available.'))
               : Stack(
             children: [

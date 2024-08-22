@@ -48,13 +48,10 @@ class FilePage extends StatelessWidget {
                         rotate: state.wantToAdd ? 90 : 0,
                         duration: const Duration(milliseconds: 300),
                         child: IconButton(
-                          onPressed: () async {
-                            await _showCreateFileDialog(context, state);
-                            BlocProvider.of<FileBloc>(context).add(
-                              UserWantsToAddFile(
-                                wantToAdd: !state.wantToAdd,
-                              ),
-                            );
+                          onPressed: () {
+                            _showCreateFileDialog(context, state);
+                            BlocProvider.of<DocumentBloc>(context).add(
+                                UserWantsToAddDocument(wantToAdd: !state.wantToAdd));
                           },
                           icon: const Icon(FontAwesomeIcons.plus),
                         ),
@@ -76,10 +73,9 @@ class FilePage extends StatelessWidget {
             itemBuilder: (context, index) {
               final file = state.allFilesForDocument[index];
               return ListTile(
-                leading: Icon(Icons.insert_drive_file,
-                    color: Colors.grey[700]),
+                leading: Icon(Icons.insert_drive_file, color: Colors.grey[700]),
                 title: Text(file.file_name),
-                subtitle: Text(file.path),
+                subtitle: Text('${_fileSizeInMB(file.file_size).toStringAsPrecision(2)} MB'),
                 onTap: () {
                   BlocProvider.of<FileBloc>(context).add(FileIsTapped(fileId: file.id));
                   BlocProvider.of<FileBloc>(context).add(OpenFile(fileId: file.id));
@@ -114,6 +110,10 @@ class FilePage extends StatelessWidget {
         return CreateFileDialog();
       },
     );
+  }
+
+  double _fileSizeInMB(double size){
+    return size / (1024.0 * 1024.0);
   }
 }
 

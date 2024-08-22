@@ -352,10 +352,11 @@ class DataService {
 
   Future<List<DocumentModel>> getDocumentsBLOC(int userId) async {
     var fetchedDocuments = await getDocumentsByUser(userId);
-    if (!fetchedDocuments.success) {
-      print("Error fetching data: ${fetchedDocuments.error.toString()}");
-      throw Error();
+
+    if (!fetchedDocuments.success || fetchedDocuments.result == null) {
+      return [];
     }
+
     List<DocumentsResponse> documents = fetchedDocuments.result!;
 
     List<DocumentModel> documentModels = documents
@@ -371,6 +372,7 @@ class DataService {
 
     return documentModels;
   }
+
 
   Future<Response<List<DocumentsResponse>>> getDocumentsByUserBLOC(int userId) async {
     ApiService apiResponse = ApiService(Dio());
@@ -406,9 +408,8 @@ class DataService {
 
   Future<List<FileModel>>getFilesForDocumentBLOC(int documentId) async {
     var fetchedFiles = await getFilesForDocument(documentId);
-    if (!fetchedFiles.success) {
-      print("Error fetching data: ${fetchedFiles.error.toString()}");
-      throw Error();
+    if (!fetchedFiles.success || fetchedFiles.result!.isEmpty) {
+      return [];
     }
     List<FilesResponse> files = fetchedFiles.result!;
 
@@ -419,9 +420,20 @@ class DataService {
       path: file.path,
       document_id: file.documentId,
       document_type_id: file.documentTypeId,
+      file_size: file.fileSize
     )).toList();
 
     return fileModels;
+  }
+
+  Future<Response<double>> getFileSizeBLOC(String path) async {
+    ApiService apiResponse = ApiService(Dio());
+    try {
+      var result = await apiResponse.getFileSize(path);
+      return Response(success: true, result: result);
+    }catch(e){
+      return Response(success: false, error: e.toString());
+    }
   }
 }
 

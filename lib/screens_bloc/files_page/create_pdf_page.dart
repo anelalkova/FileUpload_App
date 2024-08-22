@@ -20,26 +20,29 @@ class CreatePdfPage extends StatelessWidget{
           isOcr = context.read<FileBloc>().state.isOcr;
           return Scaffold(
             appBar: AppBar(
-              title: Text(isOcr ? 'Image to OCR' : 'Image to PDF',
-                  style: const TextStyle(fontWeight: FontWeight.w600)),
+              title: Text(isOcr ? 'Image to OCR' : 'Image to PDF'),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.check),
                   onPressed: () async {
                     await _showFileNameDialog(context, state);
-                    if(state.fileName != null && state.fileName.isNotEmpty && state.imageFiles.isNotEmpty) {
+
+                    var file_name = context.read<FileBloc>().state.fileName;
+                    List<File> imageFiles = context.read<FileBloc>().state.imageFiles;
+
+                    if(file_name.isNotEmpty && imageFiles.isNotEmpty) {
                       if (isOcr) {
                         BlocProvider.of<FileBloc>(context)
                             .add(GeneratePdfEvent());
                       }
+
                       BlocProvider.of<FileBloc>(context).add(UploadPdfEvent(
-                          fileName: state.fileName,
-                          documentId:
-                              context.read<DocumentBloc>().state.documentId,
-                          documentTypeId:
-                              context.read<DocumentBloc>().state.documentTypeId,
+                          fileName: file_name,
+                          documentId: context.read<DocumentBloc>().state.documentId,
+                          documentTypeId: context.read<DocumentBloc>().state.documentTypeId,
                           isOcr: isOcr,
-                          imageFiles: state.imageFiles));
+                          imageFiles: imageFiles
+                      ));
                     }
                   },
                 ),
@@ -51,13 +54,23 @@ class CreatePdfPage extends StatelessWidget{
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      padding: const EdgeInsets.all(20),
                       child: Center(
                         child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
                           alignment: Alignment.center,
                           width: 400,
                           height: 450,
-                          color: Colors.grey[200],
                           child: const Text('Images will be displayed here',
                               style: TextStyle(fontSize: 16, color: Colors.grey)
                           ),
@@ -74,7 +87,7 @@ class CreatePdfPage extends StatelessWidget{
                               Container(
                                 padding: const EdgeInsets.all(8.0),
                                 decoration: BoxDecoration(
-                                  color: const Color.fromRGBO(233, 216, 243, 0.5),
+                                  color: const Color.fromRGBO(233, 216, 243, 1),
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(15),
                                   boxShadow: [
@@ -88,12 +101,12 @@ class CreatePdfPage extends StatelessWidget{
                                 ),
                                 child: IconButton(
                                   onPressed: () => {
-                                  BlocProvider.of<FileBloc>(context).add(PickImageSource(imageSource: ImageSource.camera)),
+                                    BlocProvider.of<FileBloc>(context).add(PickImageSource(imageSource: ImageSource.camera)),
                                     _pickImage(context, ImageSource.camera)
                                   },
                                   icon: Image.asset(
                                     'assets/camera_icon.png',
-                                    width: 100,
+                                    width: 130,
                                     height: 50,
                                   ),
                                 ),
@@ -107,7 +120,7 @@ class CreatePdfPage extends StatelessWidget{
                               Container(
                                 padding: const EdgeInsets.all(8.0),
                                 decoration: BoxDecoration(
-                                  color: const Color.fromRGBO(233, 216, 243, 0.5),
+                                  color: const Color.fromRGBO(233, 216, 243, 1),
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(15),
                                   boxShadow: [
@@ -126,7 +139,7 @@ class CreatePdfPage extends StatelessWidget{
                                   },
                                   icon: Image.asset(
                                     'assets/gallery_icon.png',
-                                    width: 100,
+                                    width: 130,
                                     height: 50,
                                   ),
                                 ),
@@ -141,11 +154,21 @@ class CreatePdfPage extends StatelessWidget{
                   ],
                 )
               ],
-            ),
+            )
           );
         },
         listener: (context, state){
+          if (state.isFileUploadSuccess) {
+            Navigator.pop(context);
 
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('File uploaded successfully!')),
+            );
+          } else if (state.errorMessageWhileLoadingFile.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessageWhileLoadingFile)),
+            );
+          }
         });
   }
 

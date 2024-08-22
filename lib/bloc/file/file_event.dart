@@ -61,7 +61,7 @@ class UploadPdfEvent extends FileEvent{
     required this.fileName,
     required this.documentId,
     required this.documentTypeId,
-    required this.isOcr
+    required this.isOcr,
   });
 }
 

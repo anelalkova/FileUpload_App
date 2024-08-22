@@ -41,6 +41,7 @@ FilesResponse _$FilesResponseFromJson(Map<String, dynamic> json) =>
       documentTypeId: (json['document_Type_Id'] as num).toInt(),
       path: json['path'] as String,
       fileName: json['file_Name'] as String,
+      fileSize: (json['file_Size'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$FilesResponseToJson(FilesResponse instance) =>
@@ -50,6 +51,7 @@ Map<String, dynamic> _$FilesResponseToJson(FilesResponse instance) =>
       'document_Type_Id': instance.documentTypeId,
       'path': instance.path,
       'file_Name': instance.fileName,
+      'file_Size': instance.fileSize,
     };
 
 RegisterUserRequest _$RegisterUserRequestFromJson(Map<String, dynamic> json) =>
@@ -478,6 +480,39 @@ class _ApiService implements ApiService {
         )));
     final _result = await _dio.fetch<int>(_options);
     late int _value;
+    try {
+      _value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<double> getFileSize(String path) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<double>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/api/Files/GetFileSize/${path}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<double>(_options);
+    late double _value;
     try {
       _value = _result.data!;
     } on Object catch (e, s) {

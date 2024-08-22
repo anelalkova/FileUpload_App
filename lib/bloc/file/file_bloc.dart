@@ -56,6 +56,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
         documentId: event.file.document_id,
         documentTypeId: event.file.document_type_id,
         fileName: event.file.file_name,
+        fileSize: event.file.file_size
       ));
 
       final updatedFiles = List<FileModel>.from(state.allFilesForDocument)..add(event.file);
@@ -144,14 +145,14 @@ class FileBloc extends Bloc<FileEvent, FileState> {
       );
 
       if (result.contains('successfully')) {
-        emit(state.copyWith(fileUploadSuccess: result));
+        emit(state.copyWith(fileUploadSuccess: result, isFileUploadSuccess: true));
       } else {
         emit(state.copyWith(errorMessageWhileAddingFile: 'Failed to upload file: $result', errorWhileAddingFile: true));
       }
     } catch (e) {
       emit(state.copyWith(errorMessageWhileAddingFile: 'Error uploading file: $e', errorWhileAddingFile: true));
     } finally {
-      emit(state.copyWith(loading: false, fileName: "", fileUploadSuccess: ""));
+      emit(state.copyWith(loading: false, fileName: "", imageFiles: null, fileUploadSuccess: "", isFileUploadSuccess: false));
     }
   }
 

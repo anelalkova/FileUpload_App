@@ -13,30 +13,17 @@ class AccountPage extends StatelessWidget{
     return BlocConsumer<AccountBloc, AccountState>(
         builder: (context, state){
           return Scaffold(
-            backgroundColor: const Color.fromRGBO(242, 235, 251, 1),
             appBar: AppBar(
+              title: const Text("Account Settings"),
               actions: const [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(15, 0, 24, 0),
+                Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 24, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Account Settings',
-                          style: TextStyle(
-                            color: Color.fromRGBO(88, 73, 111, 1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
                 ),
               ],
-              backgroundColor: const Color.fromRGBO(233, 216, 243, 1),
               automaticallyImplyLeading: false,
             ),
             body: SingleChildScrollView(
@@ -78,7 +65,7 @@ class AccountPage extends StatelessWidget{
                     const SizedBox(height: 10),
                     const SizedBox(height: 30),
                     const Divider(),
-                    const Text("Documents Archive cloud storage used: "),
+                    //const Text("Welcome ${getEmail()}"),
                     ElevatedButton(
                         onPressed: () => {
                         },
@@ -136,5 +123,11 @@ class AccountPage extends StatelessWidget{
     const storage = FlutterSecureStorage();
     String? userIdString = await storage.read(key: 'user_id');
     return userIdString != null ? int.tryParse(userIdString) : null;
+  }
+
+  Future<String?> getEmail()async{
+    const storage = FlutterSecureStorage();
+    String? userEmail = await storage.read(key: 'email');
+    return userEmail;
   }
 }

@@ -41,6 +41,9 @@ abstract class ApiService {
   @GET('/api/Documents/GetDocumentSize/{document_id}')
   Future<int> getDocumentSize(@Path('document_id') int id);
 
+  @GET('/api/Files/GetFileSize/{path}')
+  Future<double> getFileSize(@Path('path') String path);
+
   //POST REQUESTS
   @POST('/api/Documents')
   Future<CreateDocumentRequest> createDocument(@Body() CreateDocumentRequest createDocumentRequest);
@@ -121,13 +124,16 @@ class FilesResponse{
   final String path;
   @JsonKey(name: 'file_Name')
   final String fileName;
+  @JsonKey(name: 'file_Size')
+  final double fileSize;
 
   FilesResponse({
     required this.id,
     required this.documentId,
     required this.documentTypeId,
     required this.path,
-    required this.fileName
+    required this.fileName,
+    required this.fileSize
   });
 
   factory FilesResponse.fromJson(Map<String, dynamic> json) => _$FilesResponseFromJson(json);

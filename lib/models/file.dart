@@ -4,6 +4,7 @@ class FileModel{
   final String path;
   final int document_id;
   final int document_type_id;
+  final double file_size;
 
   const FileModel({
     required this.id,
@@ -11,7 +12,8 @@ class FileModel{
     required this.path,
     required this.document_id,
     required this.document_type_id,
+    required this.file_size
   });
 
-  List<Object?> get props => [id, file_name, path, document_id, document_type_id];
+  List<Object?> get props => [id, file_name, path, document_id, document_type_id, file_size];
 }

@@ -1,22 +1,51 @@
 part of 'file_bloc.dart';
 
 class FileState extends Equatable {
+  //For adding a file
   final bool wantToAdd;
+  //List of files based on documentId
   final List<FileModel> allFilesForDocument;
+  //Getting an individual file
   final FileModel file;
+  //If uploading a file for error logs
   final bool errorWhileAddingFile;
   final String errorMessageWhileAddingFile;
+  //
   final int fileId;
+  //For uploading a file, whether its an OCR file or not
   final bool isOcr;
+  //When tapping a document, and fetching files for that document, if the files are still loading
   final bool loading;
+  //For uploading a file, if it was a success or not
   final String fileUploadSuccess;
+  final bool isFileUploadSuccess;
+  //For opening a file
   final Uint8List pdfFile;
+  //When opening a file if an error occured
   final bool errorWhileLoadingFile;
   final String errorMessageWhileLoadingFile;
+  //If we're choosing an image from camera or gallery
   final ImageSource imageSource;
+  //List of images later used for creating the document
   final List<File> imageFiles;
+  //Used for displaying file name in file_view_page, and for editing a file's name
   final String fileName;
-  final bool isFileUploadSuccess;
+  //If the user wants to edit a file
+  final bool wantsToEdit;
+  //If the update was a success (only available for file name now)
+  final bool updateSuccess;
+  final String updateSuccessMessage;
+  //If the file is still uploading
+  final bool isUploading;
+  //If the user changed their mind about creating a file
+  final bool wantsToExit;
+  //For loading one file
+  final bool isFileLoaded;
+  //Whether the edit was a success
+  final bool isFileEditSuccess;
+  //If the user wants to delete said file;
+  final bool wantsToDelete;
+
 
   FileState({
     this.wantToAdd = false,
@@ -34,7 +63,15 @@ class FileState extends Equatable {
     this.imageSource = ImageSource.camera,
     this.imageFiles = const [],
     this.fileName = "",
-    this.isFileUploadSuccess = false
+    this.isFileUploadSuccess = false,
+    this.wantsToEdit = false,
+    this.updateSuccess = false,
+    this.updateSuccessMessage = "",
+    this.isUploading = false,
+    this.wantsToExit = false,
+    this.isFileEditSuccess = false,
+    this.isFileLoaded = false,
+    this.wantsToDelete = false
   }) : pdfFile = pdfFile ?? Uint8List(0);
 
   FileState copyWith({
@@ -53,7 +90,15 @@ class FileState extends Equatable {
     ImageSource? imageSource,
     List<File>? imageFiles,
     String? fileName,
-    bool? isFileUploadSuccess
+    bool? isFileUploadSuccess,
+    bool? wantsToEdit,
+    bool? updateSuccess,
+    String? updateSuccessMessage,
+    bool? isUploading,
+    bool? wantsToExit,
+    bool? isFileLoaded,
+    bool? isFileEditSuccess,
+    bool? wantsToDelete
   }) {
     return FileState(
         wantToAdd: wantToAdd ?? this.wantToAdd,
@@ -75,7 +120,15 @@ class FileState extends Equatable {
         imageSource: imageSource ?? this.imageSource,
         imageFiles: imageFiles ?? this.imageFiles,
         fileName: fileName ?? this.fileName,
-        isFileUploadSuccess: isFileUploadSuccess ?? this.isFileUploadSuccess
+        isFileUploadSuccess: isFileUploadSuccess ?? this.isFileUploadSuccess,
+        wantsToEdit: wantsToEdit ?? this.wantsToEdit,
+        updateSuccess: updateSuccess ?? this.updateSuccess,
+        updateSuccessMessage: updateSuccessMessage ?? this.updateSuccessMessage,
+        isUploading: isUploading ?? this.isUploading,
+        wantsToExit: wantsToExit ?? this.wantsToExit,
+        isFileEditSuccess: isFileEditSuccess ?? this.isFileEditSuccess,
+        isFileLoaded: isFileLoaded ?? this.isFileLoaded,
+        wantsToDelete: wantsToDelete ?? this.wantsToDelete
     );
   }
 
@@ -96,7 +149,15 @@ class FileState extends Equatable {
     imageSource,
     imageFiles,
     fileName,
-    isFileUploadSuccess
+    isFileUploadSuccess,
+    wantsToEdit,
+    updateSuccessMessage,
+    updateSuccess,
+    isUploading,
+    wantsToExit,
+    isFileLoaded,
+    isFileEditSuccess,
+    wantsToDelete
   ];
 }
 
@@ -117,6 +178,14 @@ final class FileStateInitial extends FileState {
     super.imageSource,
     super.imageFiles,
     super.fileName,
-    super.isFileUploadSuccess
+    super.isFileUploadSuccess,
+    super.wantsToEdit,
+    super.updateSuccess,
+    super.updateSuccessMessage,
+    super.isUploading,
+    super.wantsToExit,
+    super.isFileEditSuccess,
+    super.isFileLoaded,
+    super.wantsToDelete
   });
 }

@@ -34,13 +34,11 @@ class FileNameDialog extends StatelessWidget{
                   .add(SaveFileName(fileName: fileNameController.text));
               Navigator.of(context).pop();
             }else {
-              ScaffoldMessenger(child: Text("Please enter file name"));
+              const ScaffoldMessenger(child: Text("Please enter file name"));
             }
           },
         ),
       ],
     );
   }
-
-
 }

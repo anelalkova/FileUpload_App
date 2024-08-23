@@ -113,3 +113,32 @@ class FileType extends FileEvent{
   FileType({required this.isOcr});
 }
 
+class WantsToEditFileName extends FileEvent{
+  final bool wantsToEdit;
+
+  WantsToEditFileName({required this.wantsToEdit});
+}
+
+class EditFileName extends FileEvent{
+  final String newFileName;
+
+  EditFileName({required this.newFileName});
+}
+
+class WantsToExitPage extends FileEvent{
+  final bool wantsToExit;
+
+  WantsToExitPage({required this.wantsToExit});
+}
+
+class ExitPage extends FileEvent{
+  final List<File> imageFiles;
+
+  ExitPage({required this.imageFiles});
+}
+
+class WantsToDelete extends FileEvent{
+  final bool wantsToDelete;
+
+  WantsToDelete({required this.wantsToDelete});
+}

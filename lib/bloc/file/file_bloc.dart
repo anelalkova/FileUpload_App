@@ -32,34 +32,44 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     on<PickImageSource>(pickImageSourceEvent);
     on<SaveFileName>(saveFileNameEvent);
     on<FileType>(chooseFileTypeEvent);
+    on<EditFileName>(editFileNameEvent);
+    on<WantsToEditFileName>(wantsToEditFileNameEvent);
+    on<ExitPage>(exitPageEvent);
+    on<WantsToExitPage>(wantsToExitPageEvent);
+    on<WantsToDelete>(wantsToDeleteEvent);
   }
 
-  void loadFilesEvent(LoadFiles event, Emitter<FileState> emit)async{
+  void loadFilesEvent(LoadFiles event, Emitter<FileState> emit) async {
     emit(state.copyWith(loading: true));
   }
-  Future<void> deleteFileEvent(DeleteFile event, Emitter<FileState> emit) async {
+
+  Future<void> deleteFileEvent(DeleteFile event,
+      Emitter<FileState> emit) async {
     await DataService().deleteFile(event.id);
     emit(state.copyWith(
-      allFilesForDocument: state.allFilesForDocument.where((file) => file.id != event.id).toList(),
+      allFilesForDocument: state.allFilesForDocument.where((file) =>
+      file.id != event.id).toList(),
     ));
   }
 
-  Future<void> userWantsToAddFileEvent(UserWantsToAddFile event, Emitter<FileState> emit) async {
+  Future<void> userWantsToAddFileEvent(UserWantsToAddFile event,
+      Emitter<FileState> emit) async {
     emit(state.copyWith(wantToAdd: event.wantToAdd));
   }
 
   Future<void> addFileEvent(AddFile event, Emitter<FileState> emit) async {
     try {
       await DataService().createFile(FilesResponse(
-        id: event.file.id,
-        path: event.file.path,
-        documentId: event.file.document_id,
-        documentTypeId: event.file.document_type_id,
-        fileName: event.file.file_name,
-        fileSize: event.file.file_size
+          id: event.file.id,
+          path: event.file.path,
+          documentId: event.file.document_id,
+          documentTypeId: event.file.document_type_id,
+          fileName: event.file.file_name,
+          fileSize: event.file.file_size
       ));
 
-      final updatedFiles = List<FileModel>.from(state.allFilesForDocument)..add(event.file);
+      final updatedFiles = List<FileModel>.from(state.allFilesForDocument)
+        ..add(event.file);
       emit(state.copyWith(
         wantToAdd: false,
         errorWhileAddingFile: false,
@@ -76,12 +86,13 @@ class FileBloc extends Bloc<FileEvent, FileState> {
   }
 
   Future<void> getFilesEvent(GetFiles event, Emitter<FileState> emit) async {
-    emit(state.copyWith(allFilesForDocument: const[]));
+    emit(state.copyWith(loading: true));
     final files = await DataService().getFilesForDocumentBLOC(event.documentId);
     emit(state.copyWith(allFilesForDocument: files, loading: false));
   }
 
-  void errorWhileAddingFileEvent(ErrorWhileAddingFile event, Emitter<FileState> emit) {
+  void errorWhileAddingFileEvent(ErrorWhileAddingFile event,
+      Emitter<FileState> emit) {
     emit(state.copyWith(
       errorWhileAddingFile: true,
       errorMessageWhileAddingFile: event.error ?? '',
@@ -89,15 +100,18 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     ));
   }
 
-  Future<void> fileIsTappedEvent(FileIsTapped event, Emitter<FileState> emit) async {
+  Future<void> fileIsTappedEvent(FileIsTapped event,
+      Emitter<FileState> emit) async {
     emit(state.copyWith(fileId: event.fileId));
   }
 
-  Future<void> generatePdfEvent(GeneratePdfEvent event, Emitter<FileState> emit) async {
+  Future<void> generatePdfEvent(GeneratePdfEvent event,
+      Emitter<FileState> emit) async {
     emit(state.copyWith(loading: true));
     try {
       final pdf = pw.Document();
-      final fontData = await rootBundle.load('assets/OpenSans-VariableFont_wdth,wght.ttf');
+      final fontData = await rootBundle.load(
+          'assets/OpenSans-VariableFont_wdth,wght.ttf');
       final ttf = pw.Font.ttf(fontData);
 
       for (var imageFile in state.imageFiles) {
@@ -108,9 +122,11 @@ class FileBloc extends Bloc<FileEvent, FileState> {
 
         if (recognizedText.text.isNotEmpty) {
           pdf.addPage(pw.Page(
-            build: (pw.Context context) => pw.Center(
-              child: pw.Text(recognizedText.text, style: pw.TextStyle(font: ttf)),
-            ),
+            build: (pw.Context context) =>
+                pw.Center(
+                  child: pw.Text(
+                      recognizedText.text, style: pw.TextStyle(font: ttf)),
+                ),
           ));
         }
       }
@@ -121,14 +137,18 @@ class FileBloc extends Bloc<FileEvent, FileState> {
 
       emit(state.copyWith(errorWhileAddingFile: false, wantToAdd: false));
     } catch (e) {
-      emit(state.copyWith(errorMessageWhileAddingFile: 'Failed to generate PDF: $e', wantToAdd: false, errorWhileAddingFile: true));
+      emit(state.copyWith(
+          errorMessageWhileAddingFile: 'Failed to generate PDF: $e',
+          wantToAdd: false,
+          errorWhileAddingFile: true));
     } finally {
       emit(state.copyWith(loading: false));
     }
   }
 
-  Future<void> uploadPdfEvent(UploadPdfEvent event, Emitter<FileState> emit) async {
-    emit(state.copyWith(loading: true));
+  Future<void> uploadPdfEvent(UploadPdfEvent event,
+      Emitter<FileState> emit) async {
+    emit(state.copyWith(loading: true, isUploading: true));
     try {
       final result = event.isOcr
           ? await DataService().ImageToOcr(
@@ -145,19 +165,29 @@ class FileBloc extends Bloc<FileEvent, FileState> {
       );
 
       if (result.contains('successfully')) {
-        emit(state.copyWith(fileUploadSuccess: result, isFileUploadSuccess: true));
+        emit(state.copyWith(
+            fileUploadSuccess: result, isFileUploadSuccess: true));
       } else {
-        emit(state.copyWith(errorMessageWhileAddingFile: 'Failed to upload file: $result', errorWhileAddingFile: true));
+        emit(state.copyWith(
+            errorMessageWhileAddingFile: 'Failed to upload file: $result',
+            errorWhileAddingFile: true));
       }
     } catch (e) {
-      emit(state.copyWith(errorMessageWhileAddingFile: 'Error uploading file: $e', errorWhileAddingFile: true));
+      emit(state.copyWith(
+          errorMessageWhileAddingFile: 'Error uploading file: $e',
+          errorWhileAddingFile: true));
     } finally {
-      emit(state.copyWith(loading: false, fileName: "", imageFiles: null, fileUploadSuccess: "", isFileUploadSuccess: false));
+      emit(state.copyWith(loading: false,
+          fileName: "",
+          imageFiles: null,
+          fileUploadSuccess: "",
+          isFileUploadSuccess: false,
+          isUploading: false));
     }
   }
 
-  Future<void>openFileEvent(OpenFile event, Emitter<FileState>emit)async {
-    emit(state.copyWith(loading: true));
+  Future<void> openFileEvent(OpenFile event, Emitter<FileState>emit) async {
+    emit(state.copyWith(isFileLoaded: true));
     try {
       final result = await DataService().getPDFBytes(event.fileId);
       if (result.success) {
@@ -166,20 +196,23 @@ class FileBloc extends Bloc<FileEvent, FileState> {
         emit(state.copyWith(errorWhileLoadingFile: true,
             errorMessageWhileLoadingFile: result.error));
       }
-      emit(state.copyWith(loading: false));
+      emit(state.copyWith(isFileLoaded: false));
     } catch (e) {
       emit(state.copyWith(errorWhileLoadingFile: true,
-          errorMessageWhileLoadingFile: e.toString(), loading: false));
+          errorMessageWhileLoadingFile: e.toString(), isFileLoaded: false));
     } finally {
-      emit(state.copyWith(loading: false));
+      emit(state.copyWith(isFileLoaded: false));
     }
   }
 
-  void errorWhileLoadingFileEvent(ErrorWhileLoadingFile event, Emitter<FileState>emit)async{
-    emit(state.copyWith(errorWhileLoadingFile: true, errorMessageWhileLoadingFile: event.errorMessageWhileLoadingFile));
+  void errorWhileLoadingFileEvent(ErrorWhileLoadingFile event,
+      Emitter<FileState>emit) async {
+    emit(state.copyWith(errorWhileLoadingFile: true,
+        errorMessageWhileLoadingFile: event.errorMessageWhileLoadingFile));
   }
 
-  Future<void>pickImageSourceEvent(PickImageSource event, Emitter<FileState>emit)async{
+  Future<void> pickImageSourceEvent(PickImageSource event,
+      Emitter<FileState>emit) async {
     emit(state.copyWith(imageSource: event.imageSource));
   }
 
@@ -205,11 +238,60 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     }
   }
 
-  void saveFileNameEvent(SaveFileName event, Emitter<FileState> emit) async{
+  Future<void> editFileNameEvent(EditFileName event,
+      Emitter<FileState> emit) async {
+    try {
+      emit(state.copyWith(loading: true));
+
+      await DataService().updateFileBLOC(
+          UpdateFile(file_Name: event.newFileName), state.fileId);
+
+      emit(state.copyWith(
+        fileName: event.newFileName,
+        wantsToEdit: false,
+        updateSuccess: true,
+        updateSuccessMessage: "File updated successfully!",
+        loading: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        updateSuccessMessage: e.toString(),
+        updateSuccess: false,
+        wantsToEdit: false,
+        loading: false,
+      ));
+    } finally {
+      emit(state.copyWith(
+        updateSuccessMessage: "",
+        updateSuccess: false,
+        wantsToEdit: false,
+        loading: false,
+      ));
+    }
+  }
+
+  void wantsToEditFileNameEvent(WantsToEditFileName event,
+      Emitter<FileState>emit) async {
+    emit(state.copyWith(wantsToEdit: event.wantsToEdit));
+  }
+
+  void saveFileNameEvent(SaveFileName event, Emitter<FileState> emit) async {
     emit(state.copyWith(fileName: event.fileName));
   }
 
-  void chooseFileTypeEvent(FileType event, Emitter<FileState>emit)async{
+  void chooseFileTypeEvent(FileType event, Emitter<FileState>emit) async {
     emit(state.copyWith(isOcr: event.isOcr));
+  }
+
+  void exitPageEvent(ExitPage event, Emitter <FileState> emit)async{
+    emit(state.copyWith(imageFiles: event.imageFiles));
+  }
+
+  void wantsToExitPageEvent(WantsToExitPage event, Emitter<FileState> emit)async {
+    emit(state.copyWith(wantsToExit: event.wantsToExit));
+  }
+
+  void wantsToDeleteEvent(WantsToDelete event, Emitter<FileState> emit)async{
+    emit(state.copyWith(wantsToDelete: event.wantsToDelete));
   }
 }

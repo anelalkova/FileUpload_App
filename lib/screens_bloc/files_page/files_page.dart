@@ -74,15 +74,16 @@ class FilePage extends StatelessWidget {
               final file = state.allFilesForDocument[index];
               return ListTile(
                 leading: Icon(Icons.insert_drive_file, color: Colors.grey[700]),
-                title: Text(file.file_name),
+                title: Text(formattedFileName(file.file_name)),
                 subtitle: Text('${_fileSizeInMB(file.file_size).toStringAsPrecision(2)} MB'),
                 onTap: () {
                   BlocProvider.of<FileBloc>(context).add(FileIsTapped(fileId: file.id));
                   BlocProvider.of<FileBloc>(context).add(OpenFile(fileId: file.id));
+                  BlocProvider.of<FileBloc>(context).add(SaveFileName(fileName: formattedFileName(file.file_name)));
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const FileViewPage(),
+                      builder: (context) => FileViewPage(),
                     ),
                   );
                 },
@@ -99,6 +100,10 @@ class FilePage extends StatelessWidget {
             ),
           );
         }
+
+        if(state.isFileUploadSuccess){
+          context.read<FileBloc>().add(GetFiles(documentId: context.read<DocumentBloc>().state.documentId));
+        }
       },
     );
   }
@@ -114,6 +119,11 @@ class FilePage extends StatelessWidget {
 
   double _fileSizeInMB(double size){
     return size / (1024.0 * 1024.0);
+  }
+
+  String formattedFileName(String name){
+    var parts = name.split("_");
+    return parts[0];
   }
 }
 

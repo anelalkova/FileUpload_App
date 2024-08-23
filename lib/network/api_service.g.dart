@@ -155,6 +155,15 @@ Map<String, dynamic> _$UpdateUserToJson(UpdateUser instance) =>
       'activation_Code': instance.activation_Code,
     };
 
+UpdateFile _$UpdateFileFromJson(Map<String, dynamic> json) => UpdateFile(
+      file_Name: json['file_Name'] as String?,
+    );
+
+Map<String, dynamic> _$UpdateFileToJson(UpdateFile instance) =>
+    <String, dynamic>{
+      'file_Name': instance.file_Name,
+    };
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -793,6 +802,35 @@ class _ApiService implements ApiService {
         .compose(
           _dio.options,
           '/User/${id}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
+  Future<void> updateFile(
+    int id,
+    UpdateFile updateFile,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(updateFile.toJson());
+    final _options = _setStreamType<void>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/api/Files/${id}',
           queryParameters: queryParameters,
           data: _data,
         )

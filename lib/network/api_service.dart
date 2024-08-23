@@ -73,6 +73,10 @@ abstract class ApiService {
   //PUT REQUESTS
   @PUT('/User/{id}')
   Future<void> updateUser(@Path('id') int id, @Body() UpdateUser updateUser);
+
+  @PUT('/api/Files/{id}')
+  Future<void> updateFile(@Path('id') int id, @Body() UpdateFile updateFile);
+
 }
 
 @JsonSerializable()
@@ -283,4 +287,18 @@ class UpdateUser{
   factory UpdateUser.fromJson(Map<String, dynamic> json) => _$UpdateUserFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateUserToJson(this);
+}
+
+@JsonSerializable()
+class UpdateFile{
+  @JsonKey(name: 'file_Name')
+  final String? file_Name;
+
+  UpdateFile({
+    this.file_Name
+  });
+
+  factory UpdateFile.fromJson(Map<String, dynamic> json) => _$UpdateFileFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpdateFileToJson(this);
 }

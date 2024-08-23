@@ -435,6 +435,15 @@ class DataService {
       return Response(success: false, error: e.toString());
     }
   }
+  Future<Response<bool>> updateFileBLOC(UpdateFile update, int id) async {
+    ApiService apiResponse = ApiService(Dio());
+    try{
+      await apiResponse.updateFile(id, update);
+      return Response(success: true);
+    }catch(e){
+     return Response(success: false, error: e.toString());
+    }
+  }
 }
 
 

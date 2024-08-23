@@ -17,20 +17,20 @@ class CreateFileDialog extends StatelessWidget{
         borderRadius: BorderRadius.circular(20.0),
       ),
       elevation: 0,
-      backgroundColor: Colors.transparent,
+ //     backgroundColor: Colors.transparent,
       contentPadding: EdgeInsets.zero,
       content: Container(
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+    //      color: const Color.fromRGBO(233, 216, 243, 1),
           borderRadius: BorderRadius.circular(20.0),
-          boxShadow: const [
+      /*    boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 10.0,
               offset: Offset(0.0, 10.0),
             ),
-          ],
+          ],*/
         ),
         child: SingleChildScrollView(
           child: Form(

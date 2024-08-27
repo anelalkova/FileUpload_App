@@ -59,3 +59,4 @@ class LogoutButtonPressed extends AccountEvent{
   @override
   List<Object?> get props => [userWantsToLogout];
 }
+

@@ -45,8 +45,15 @@ class FileState extends Equatable {
   final bool isFileEditSuccess;
   //If the user wants to delete said file;
   final bool wantsToDelete;
-
-
+  //If image to OCR generation was successful
+  final bool isOcrConversionSuccess;
+  //List of selected files, saved their id's
+  final List<int>selectedFileIds;
+  final bool isItemSelected;
+  //If the user wants to download a file
+  final bool wantsToDownloadFile;
+  final bool fileDownloadSuccess;
+  final String fileDownloadMessage;
   FileState({
     this.wantToAdd = false,
     this.allFilesForDocument = const [],
@@ -71,7 +78,13 @@ class FileState extends Equatable {
     this.wantsToExit = false,
     this.isFileEditSuccess = false,
     this.isFileLoaded = false,
-    this.wantsToDelete = false
+    this.wantsToDelete = false,
+    this.isOcrConversionSuccess = false,
+    this.selectedFileIds = const [],
+    this.isItemSelected = false,
+    this.wantsToDownloadFile = false,
+    this.fileDownloadMessage = "",
+    this.fileDownloadSuccess = false
   }) : pdfFile = pdfFile ?? Uint8List(0);
 
   FileState copyWith({
@@ -98,7 +111,13 @@ class FileState extends Equatable {
     bool? wantsToExit,
     bool? isFileLoaded,
     bool? isFileEditSuccess,
-    bool? wantsToDelete
+    bool? wantsToDelete,
+    bool? isOcrConversionSuccess,
+    List<int>? selectedFileIds,
+    bool? isItemSelected,
+    bool? wantsToDownloadFile,
+    bool? fileDownloadSuccess,
+    String? fileDownloadMessage
   }) {
     return FileState(
         wantToAdd: wantToAdd ?? this.wantToAdd,
@@ -128,7 +147,13 @@ class FileState extends Equatable {
         wantsToExit: wantsToExit ?? this.wantsToExit,
         isFileEditSuccess: isFileEditSuccess ?? this.isFileEditSuccess,
         isFileLoaded: isFileLoaded ?? this.isFileLoaded,
-        wantsToDelete: wantsToDelete ?? this.wantsToDelete
+        wantsToDelete: wantsToDelete ?? this.wantsToDelete,
+        isOcrConversionSuccess: isOcrConversionSuccess ?? this.isOcrConversionSuccess,
+        selectedFileIds: selectedFileIds ?? this.selectedFileIds,
+        isItemSelected: isItemSelected ?? this.isItemSelected,
+        wantsToDownloadFile: wantsToDownloadFile ?? this.wantsToDownloadFile,
+        fileDownloadMessage: fileDownloadMessage ?? this.fileDownloadMessage,
+        fileDownloadSuccess: fileDownloadSuccess ?? this.fileDownloadSuccess
     );
   }
 
@@ -157,7 +182,13 @@ class FileState extends Equatable {
     wantsToExit,
     isFileLoaded,
     isFileEditSuccess,
-    wantsToDelete
+    wantsToDelete,
+    isOcrConversionSuccess,
+    selectedFileIds,
+    isItemSelected,
+    wantsToDownloadFile,
+    fileDownloadSuccess,
+    fileDownloadMessage
   ];
 }
 
@@ -186,6 +217,11 @@ final class FileStateInitial extends FileState {
     super.wantsToExit,
     super.isFileEditSuccess,
     super.isFileLoaded,
-    super.wantsToDelete
+    super.wantsToDelete,
+    super.isOcrConversionSuccess,
+    super.isItemSelected,
+    super.wantsToDownloadFile,
+    super.fileDownloadMessage,
+    super.fileDownloadSuccess
   });
 }

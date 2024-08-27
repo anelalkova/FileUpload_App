@@ -49,14 +49,14 @@ class GeneratePdfEvent extends FileEvent{}
 
 class UploadPdfEvent extends FileEvent{
   final File? pdfFile;
-  final List<File> imageFiles;
+  final List<File>? imageFiles;
   final String fileName;
   final int documentTypeId;
   final int documentId;
   final bool isOcr;
 
   UploadPdfEvent({
-    required this.imageFiles,
+    this.imageFiles,
     this.pdfFile,
     required this.fileName,
     required this.documentId,
@@ -141,4 +141,50 @@ class WantsToDelete extends FileEvent{
   final bool wantsToDelete;
 
   WantsToDelete({required this.wantsToDelete});
+}
+
+class ProcessAndUploadPdfEvent extends FileEvent{
+  final bool isOcr;
+  final String fileName;
+  final int documentId;
+  final int documentTypeId;
+  final File? pdfFile;
+  final List<File>? imageFiles;
+
+  ProcessAndUploadPdfEvent({
+    required this.isOcr,
+    required this.fileName,
+    required this.documentId,
+    required this.documentTypeId,
+    this.pdfFile,
+    this.imageFiles});
+}
+
+class UpdateSelectedIds extends FileEvent {
+  final List<int>? fileIds;
+  final int newFileId;
+
+  UpdateSelectedIds({required this.fileIds, required this.newFileId});
+}
+
+class SelectFile extends FileEvent{
+  final bool isItemSelected;
+
+  SelectFile({required this.isItemSelected});
+}
+
+class ClearSelectedFiles extends FileEvent{}
+
+class ResetFileState extends FileEvent{}
+
+class WantsToDownloadFile extends FileEvent{
+  final bool wantsToDownload;
+
+  WantsToDownloadFile({required this.wantsToDownload});
+}
+
+class DownloadFile extends FileEvent{
+  final int downloadFileId;
+
+  DownloadFile({required this.downloadFileId});
 }

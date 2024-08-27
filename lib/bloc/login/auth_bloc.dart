@@ -68,7 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     if(response.success){
       await storage.write(key: 'email', value: email);
       await storage.write(key: 'password', value: password);
-    
+
       emit(AutoLoginSuccess());
     }else{
       emit(const AuthInitial(triedToAutoLogin: true));

@@ -61,30 +61,30 @@ class FileViewPage extends StatelessWidget {
                   ? const Center(child: CircularProgressIndicator())
                   : state.pdfFile.isEmpty
                   ? const Center(child: Text('Error fetching file'))
-                  : Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-                    child: Container(
-                      width: 400,
-                      height: 500,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 5,
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: PDFView(
+                  : LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    children: [
+                      PDFView(
                         pdfData: state.pdfFile,
                         swipeHorizontal: true,
+                        enableSwipe: true,
+                        onPageChanged: (page, total) {
+                          // Optional: Handle page change
+                        },
+                        onViewCreated: (PDFViewController pdfViewController) {
+                          // Optional: Handle PDF view creation
+                        },
+                        onError: (error) {
+                          // Optional: Handle errors
+                        },
+                        onPageError: (page, error) {
+                          // Optional: Handle page-specific errors
+                        },
                       ),
-                    ),
-                  )
-                ],
+                    ],
+                  );
+                },
               ),
               bottomNavigationBar: Padding(
                 padding: const EdgeInsets.all(15),
@@ -125,7 +125,10 @@ class FileViewPage extends StatelessWidget {
                                   ))),
                           IconButton(
                               icon: const Icon(Icons.download),
-                              onPressed: () {}),
+                              onPressed: () {
+                                print(state.fileId);
+                                BlocProvider.of<FileBloc>(context).add(DownloadFile(downloadFileId: state.fileId));
+                              }),
                           IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
@@ -151,13 +154,18 @@ class FileViewPage extends StatelessWidget {
 
         if (state.errorWhileLoadingFile) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-              Text('Error: ${state.errorMessageWhileLoadingFile}')));
+              content: Text('Error: ${state.errorMessageWhileLoadingFile}')));
         }
 
         if (state.updateSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.updateSuccessMessage)),
+          );
+        }
+
+        if(state.fileDownloadSuccess){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.fileDownloadMessage)),
           );
         }
       },

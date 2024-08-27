@@ -229,7 +229,7 @@ class DataService {
       if (response.statusCode == 200) {
         return 'PDF uploaded successfully: $responseBody';
       } else {
-        return 'Failed to upload PDF: ${response.statusCode}';
+        return 'Failed to upload PDF: ${response.reasonPhrase}';
       }
     } catch (e) {
       return 'Error uploading PDF: $e';
@@ -293,11 +293,11 @@ class DataService {
 
     try {
       final directory = await getExternalStorageDirectory();
-     final downloadsDirectory = Directory('${directory?.path}/FileUploads');
+     final downloadsDirectory = Directory("/storage/emulated/0/FileUploadApp");
       if (!await downloadsDirectory.exists()) {
         await downloadsDirectory.create(recursive: true);
       }
-
+//storage/emulated/0/FileUploadApp
       final filePath = '${downloadsDirectory.path}/file_$fileId.pdf';
       //se zacuvue u This PC\Anastasija's S22+\Internal storage\Android\data\com.example.file_upload_app_part2\files\FileUploads
       //ama ne moze da se otvore papkata na tel radi permisii na Android taka da na kompjuterot moze da se potvrde deka se siminja

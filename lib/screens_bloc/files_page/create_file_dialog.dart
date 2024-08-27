@@ -17,20 +17,11 @@ class CreateFileDialog extends StatelessWidget{
         borderRadius: BorderRadius.circular(20.0),
       ),
       elevation: 0,
- //     backgroundColor: Colors.transparent,
       contentPadding: EdgeInsets.zero,
       content: Container(
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-    //      color: const Color.fromRGBO(233, 216, 243, 1),
           borderRadius: BorderRadius.circular(20.0),
-      /*    boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: Offset(0.0, 10.0),
-            ),
-          ],*/
         ),
         child: SingleChildScrollView(
           child: Form(
@@ -82,7 +73,11 @@ class CreateFileDialog extends StatelessWidget{
                             height: 70.0,
                           ),
                           onPressed: () {
-           //                 Navigator.of(context).pop();
+                            BlocProvider.of<FileBloc>(context).add(UserWantsToAddFile(wantToAdd: true));
+                            BlocProvider.of<FileBloc>(context).add(FileType(isOcr: true));
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => CreatePdfPage())
+                            );
                           },
                         ),
                         const SizedBox(height: 8),

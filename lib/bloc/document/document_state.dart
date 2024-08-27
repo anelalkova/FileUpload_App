@@ -11,6 +11,8 @@ class DocumentState extends Equatable{
   final int documentId;
   final bool loading;
   final int documentTypeId;
+  final List<int>selectedDocumentIds;
+  final bool isItemSelected;
 
   const DocumentState({
     this.wantToAdd = false,
@@ -22,7 +24,9 @@ class DocumentState extends Equatable{
     this.expandedIndex = -1,
     this.documentId = -1,
     this.loading = false,
-    this.documentTypeId = -1
+    this.documentTypeId = -1,
+    this.selectedDocumentIds = const [],
+    this.isItemSelected = false
   });
 
   DocumentState copyWith({
@@ -35,19 +39,25 @@ class DocumentState extends Equatable{
     int? expandedIndex,
     int? documentId,
     int? documentTypeId,
-    bool? loading
-  }){
+    bool? loading,
+    List<int>? selectedDocumentIds,
+    bool? isItemSelected
+  }) {
     return DocumentState(
-      wantToAdd: wantToAdd ?? this.wantToAdd,
-      allDocumentTypes: allDocumentTypes ?? this.allDocumentTypes,
-      document: document ?? this.document,
-      userDocuments: userDocuments ?? List.from(this.userDocuments),
-      errorWhileAddingDocument: errorWhileAddingDocument ?? this.errorWhileAddingDocument,
-      errorMessageWhileAddingDocument: errorMessageWhileAddingDocument ?? this.errorMessageWhileAddingDocument,
-      expandedIndex: expandedIndex ?? this.expandedIndex,
-      documentId: documentId ?? this.documentId,
-      loading: loading ?? this.loading,
-        documentTypeId: documentTypeId ?? this.documentTypeId
+        wantToAdd: wantToAdd ?? this.wantToAdd,
+        allDocumentTypes: allDocumentTypes ?? this.allDocumentTypes,
+        document: document ?? this.document,
+        userDocuments: userDocuments ?? List.from(this.userDocuments),
+        errorWhileAddingDocument: errorWhileAddingDocument ??
+            this.errorWhileAddingDocument,
+        errorMessageWhileAddingDocument: errorMessageWhileAddingDocument ??
+            this.errorMessageWhileAddingDocument,
+        expandedIndex: expandedIndex ?? this.expandedIndex,
+        documentId: documentId ?? this.documentId,
+        loading: loading ?? this.loading,
+        documentTypeId: documentTypeId ?? this.documentTypeId,
+        selectedDocumentIds: selectedDocumentIds ?? this.selectedDocumentIds,
+        isItemSelected: isItemSelected ?? this.isItemSelected
     );
   }
 
@@ -62,7 +72,9 @@ class DocumentState extends Equatable{
     expandedIndex,
     documentId,
     loading,
-    documentTypeId
+    documentTypeId,
+    selectedDocumentIds,
+    isItemSelected
   ];
 }
 
@@ -77,6 +89,8 @@ final class DocumentStateInitial extends DocumentState{
     super.expandedIndex,
     super.documentId,
     super.loading,
-    super.documentTypeId
+    super.documentTypeId,
+    super.selectedDocumentIds,
+    super.isItemSelected
   });
 }

@@ -1,3 +1,164 @@
+/*import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../bloc/login/auth_bloc.dart';
+import '../../landing_page/langing_page.dart';
+import '../forgot_password/forgot_password.dart';
+import '../register/register.dart';
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.isAutoLoginSuccess || state.loginIsValid) {
+          if (Navigator.canPop(context)) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LandingPage()),
+                  (Route<dynamic> route) => false,
+            );
+          }
+        } else if (state.registrationErrorMessage.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.registrationErrorMessage)),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is AuthStateInitial) {
+          context.read<AuthBloc>().add(AutoLogin());
+          context.read<AuthBloc>().add(RequestPermissions());
+        }
+
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Login',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    _LoginForm(),
+                    const SizedBox(height: 16),
+                    _ForgotPasswordButton(),
+                    const SizedBox(height: 16),
+                    _SignUpPrompt(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _emailController,
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter an email address.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _passwordController,
+            decoration: const InputDecoration(
+              labelText: 'Password',
+              border: OutlineInputBorder(),
+            ),
+            obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a password.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                BlocProvider.of<AuthBloc>(context).add(LoginButtonPressed(
+                    email: _emailController.text,
+                    password: _passwordController.text));
+              }
+            },
+            child: const Text('Log in'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _ForgotPasswordButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ForgotPasswordScreen(),
+          ),
+        );
+      },
+      child: const Text('Forgot your password?'),
+    );
+  }
+}
+
+class _SignUpPrompt extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text('Don\'t have an account?'),
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RegisterScreen(),
+              ),
+            );
+          },
+          child: const Text('Sign up'),
+        ),
+      ],
+    );
+  }
+}*/
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -204,6 +365,3 @@ class _SignUpPrompt extends StatelessWidget {
     );
   }
 }
-
-
-

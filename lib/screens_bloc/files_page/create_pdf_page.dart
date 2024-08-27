@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
 import 'package:file_upload_app_part2/screens_bloc/files_page/file_name_dialog.dart';
-import 'package:file_upload_app_part2/screens_bloc/files_page/files_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,12 +37,16 @@ class CreatePdfPage extends StatelessWidget {
           }
 
           if (state.wantsToExit) {
-            BlocProvider.of<FileBloc>(context).add(ExitPage(imageFiles: []));
-            BlocProvider.of<FileBloc>(context).add(WantsToExitPage(wantsToExit: false));
+            BlocProvider.of<FileBloc>(context).add(ExitPage(imageFiles: const []));
+            BlocProvider.of<FileBloc>(context).add(
+                WantsToExitPage(wantsToExit: false));
           }
         },
         builder: (context, state) {
-          isOcr = context.read<FileBloc>().state.isOcr;
+          isOcr = context
+              .read<FileBloc>()
+              .state
+              .isOcr;
           return Scaffold(
             appBar: AppBar(
               title: Text(isOcr ? 'Image to OCR' : 'Image to PDF'),
@@ -53,21 +56,30 @@ class CreatePdfPage extends StatelessWidget {
                   onPressed: () async {
                     await _showFileNameDialog(context, state);
 
-                    var fileName = context.read<FileBloc>().state.fileName;
-                    List<File> imageFiles = context.read<FileBloc>().state.imageFiles;
+                    var fileName = context
+                        .read<FileBloc>()
+                        .state
+                        .fileName;
+                    List<File> imageFiles = context
+                        .read<FileBloc>()
+                        .state
+                        .imageFiles;
 
                     if (fileName.isNotEmpty && imageFiles.isNotEmpty) {
-                      if (isOcr) {
-                        BlocProvider.of<FileBloc>(context).add(GeneratePdfEvent());
-                      }
-
-                      BlocProvider.of<FileBloc>(context).add(UploadPdfEvent(
-                        fileName: fileName,
-                        documentId: context.read<DocumentBloc>().state.documentId,
-                        documentTypeId: context.read<DocumentBloc>().state.documentTypeId,
-                        isOcr: isOcr,
-                        imageFiles: imageFiles,
-                      ));
+                      BlocProvider.of<FileBloc>(context).add(
+                          ProcessAndUploadPdfEvent(
+                            fileName: fileName,
+                            documentId: context
+                                .read<DocumentBloc>()
+                                .state
+                                .documentId,
+                            documentTypeId: context
+                                .read<DocumentBloc>()
+                                .state
+                                .documentTypeId,
+                            isOcr: isOcr,
+                            imageFiles: imageFiles,
+                          ));
                     }
                   },
                 ),
@@ -100,7 +112,8 @@ class CreatePdfPage extends StatelessWidget {
                             child: state.imageFiles.isEmpty
                                 ? const Text(
                               'Images will be displayed here',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.grey),
                             )
                                 : PageView.builder(
                               controller: _pageController,
@@ -125,7 +138,8 @@ class CreatePdfPage extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8.0),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(233, 216, 243, 1),
+                                    color: const Color.fromRGBO(
+                                        233, 216, 243, 1),
                                     shape: BoxShape.rectangle,
                                     borderRadius: BorderRadius.circular(15),
                                     boxShadow: [
@@ -140,8 +154,10 @@ class CreatePdfPage extends StatelessWidget {
                                   child: IconButton(
                                     onPressed: () {
                                       BlocProvider.of<FileBloc>(context).add(
-                                          PickImageSource(imageSource: ImageSource.camera));
+                                          PickImageSource(
+                                              imageSource: ImageSource.camera));
                                       _pickImage(context, ImageSource.camera);
+//                                      edgeDetect();
                                     },
                                     icon: Image.asset(
                                       'assets/camera_icon.png',
@@ -159,7 +175,8 @@ class CreatePdfPage extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8.0),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(233, 216, 243, 1),
+                                    color: const Color.fromRGBO(
+                                        233, 216, 243, 1),
                                     shape: BoxShape.rectangle,
                                     borderRadius: BorderRadius.circular(15),
                                     boxShadow: [
@@ -174,7 +191,9 @@ class CreatePdfPage extends StatelessWidget {
                                   child: IconButton(
                                     onPressed: () {
                                       BlocProvider.of<FileBloc>(context).add(
-                                          PickImageSource(imageSource: ImageSource.gallery));
+                                          PickImageSource(
+                                              imageSource: ImageSource
+                                                  .gallery));
                                       _pickImage(context, ImageSource.gallery);
                                     },
                                     icon: Image.asset(
@@ -217,14 +236,16 @@ class CreatePdfPage extends StatelessWidget {
       final pickedFile = await picker.pickImage(source: source);
 
       if (pickedFile != null) {
-        BlocProvider.of<FileBloc>(context).add(AddImage(image: File(pickedFile.path)));
+        BlocProvider.of<FileBloc>(context).add(
+            AddImage(image: File(pickedFile.path)));
       }
     } catch (e) {
       print('Error picking image ${e.toString()}');
     }
   }
 
-  Future<void> _showFileNameDialog(BuildContext context, FileState state) async {
+  Future<void> _showFileNameDialog(BuildContext context,
+      FileState state) async {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -242,4 +263,48 @@ class CreatePdfPage extends StatelessWidget {
     );
     return result ?? false;
   }
+
+  /*void edgeDetect() async {
+    bool isCameraGranted = await Permission.camera.request().isGranted;
+    if (!isCameraGranted) {
+      isCameraGranted = await Permission.camera.request() == PermissionStatus.granted;
+    }
+
+    if (!isCameraGranted) {
+      // Have not permission to camera
+      return;
+    }
+
+    // Generate filepath for saving
+    String imagePath = p.join(
+      (await getApplicationSupportDirectory()).path,
+      "${(DateTime.now().millisecondsSinceEpoch / 1000).round()}.jpeg",
+    );
+
+    try {
+      // Make sure to await the call to detectEdge.
+      bool success = await EdgeDetection.detectEdge(
+        imagePath,
+        canUseGallery: true,
+        androidScanTitle: 'Scanning',
+        androidCropTitle: 'Crop',
+        androidCropBlackWhiteTitle: 'Black White',
+        androidCropReset: 'Reset',
+      );
+    } catch (e) {
+      print(e);
+    }
+
+    try {
+      // Make sure to await the call to detectEdgeFromGallery.
+      bool success = await EdgeDetection.detectEdgeFromGallery(
+        imagePath,
+        androidCropTitle: 'Crop',
+        androidCropBlackWhiteTitle: 'Black White',
+        androidCropReset: 'Reset',
+      );
+    } catch (e) {
+      print(e);
+    }
+  }*/
 }

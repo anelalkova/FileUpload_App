@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../network/api_service.dart';

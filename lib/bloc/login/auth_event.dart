@@ -38,3 +38,4 @@ class ForgotPassword extends AuthEvent {
 }
 
 class RequestPermissions extends AuthEvent {}
+

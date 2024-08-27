@@ -53,3 +53,19 @@ class LoadingDocuments extends DocumentEvent{
 
   LoadingDocuments({required this.loading});
 }
+
+class UpdateSelectedDocumentIds extends DocumentEvent{
+  final List<int>? documentIds;
+  final int newDocumentId;
+
+  UpdateSelectedDocumentIds({required this.documentIds, required this.newDocumentId});
+}
+
+class SelectItem extends DocumentEvent{
+  final bool isItemSelected;
+
+  SelectItem({required this.isItemSelected});
+}
+
+class ClearSelectedItems extends DocumentEvent{}
+

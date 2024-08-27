@@ -12,8 +12,6 @@ part 'document_event.dart';
 part 'document_state.dart';
 
 class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
-  List<DocumentModel> lastDocuments = [];
-
   DocumentBloc() : super(const DocumentStateInitial(userDocuments: [])) {
     on<UserWantsToAddDocument>(userWantsToAddDocumentEvent);
     on<AddDocument>(addDocumentEvent);
@@ -22,6 +20,9 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
     on<ErrorWhileAddingDocument>(errorWhileAddingDocument);
     on<DocumentIsTapped>(documentIsTapped);
     on<DeleteDocument>(deleteDocument);
+    on<UpdateSelectedDocumentIds>(updateSelectedDocumentIdsEvent);
+    on<SelectItem>(selectItemEvent);
+    on<ClearSelectedItems>(clearSelectedItemsEvent);
   }
 
   Future<void> deleteDocument(DeleteDocument event, Emitter<DocumentState> emit) async{
@@ -79,6 +80,15 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
     }
   }
 
+  Future<void>updateSelectedDocumentIdsEvent(UpdateSelectedDocumentIds event, Emitter<DocumentState>emit)async{
+    List<int> documentIds = List<int>.from(event.documentIds ?? []);
+    if(documentIds.contains(event.newDocumentId)){
+      documentIds.remove(event.newDocumentId);
+    }else {
+      documentIds.add(event.newDocumentId);
+    }
+    emit(state.copyWith(selectedDocumentIds: documentIds));
+  }
 
   void errorWhileAddingDocument(ErrorWhileAddingDocument event, Emitter<DocumentState> emit) async{
     emit(state.copyWith(errorWhileAddingDocument: true, errorMessageWhileAddingDocument: event.error, wantToAdd: false));
@@ -86,5 +96,13 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
 
   void documentIsTapped(DocumentIsTapped event, Emitter<DocumentState> emit)async{
     emit(state.copyWith(documentId: event.documentId, documentTypeId: event.documentTypeId));
+  }
+
+  void selectItemEvent(SelectItem event, Emitter<DocumentState> emit)async{
+    emit(state.copyWith(isItemSelected: !state.isItemSelected));
+  }
+
+  void clearSelectedItemsEvent(ClearSelectedItems event, Emitter<DocumentState>emit){
+    emit(state.copyWith(selectedDocumentIds: []));
   }
 }

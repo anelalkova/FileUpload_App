@@ -23,8 +23,6 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     on<ErrorWhileAddingFile>(errorWhileAddingFileEvent);
     on<DeleteFile>(deleteFileEvent);
     on<FileIsTapped>(fileIsTappedEvent);
-    on<GeneratePdfEvent>(generatePdfEvent);
-    on<UploadPdfEvent>(uploadPdfEvent);
     on<LoadFiles>(loadFilesEvent);
     on<OpenFile>(openFileEvent);
     on<ErrorWhileLoadingFile>(errorWhileLoadingFileEvent);
@@ -37,6 +35,13 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     on<ExitPage>(exitPageEvent);
     on<WantsToExitPage>(wantsToExitPageEvent);
     on<WantsToDelete>(wantsToDeleteEvent);
+    on<ProcessAndUploadPdfEvent>(processAndUploadPdfEvent);
+    on<SelectFile>(selectFileEvent);
+    on<ClearSelectedFiles>(clearSelectedFilesEvent);
+    on<UpdateSelectedIds>(updateSelectedFileIdsEvent);
+    on<ResetFileState>(resetFileStateEvent);
+    on<WantsToDownloadFile>(wantsToDownloadFileEvent);
+    on<DownloadFile>(downloadFileEvent);
   }
 
   void loadFilesEvent(LoadFiles event, Emitter<FileState> emit) async {
@@ -105,84 +110,84 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     emit(state.copyWith(fileId: event.fileId));
   }
 
-  Future<void> generatePdfEvent(GeneratePdfEvent event,
-      Emitter<FileState> emit) async {
-    emit(state.copyWith(loading: true));
+  Future<void> processAndUploadPdfEvent(
+      ProcessAndUploadPdfEvent event, Emitter<FileState> emit) async {
+    emit(state.copyWith(loading: true, isOcrConversionSuccess: false, isUploading: true));
     try {
       final pdf = pw.Document();
-      final fontData = await rootBundle.load(
-          'assets/OpenSans-VariableFont_wdth,wght.ttf');
+      final fontData = await rootBundle.load('assets/OpenSans-VariableFont_wdth,wght.ttf');
       final ttf = pw.Font.ttf(fontData);
+      final tempDir = await getTemporaryDirectory();
+      File? pdfFile;
 
-      for (var imageFile in state.imageFiles) {
-        final textRecognizer = TextRecognizer();
-        final inputImage = InputImage.fromFile(imageFile);
-        final recognizedText = await textRecognizer.processImage(inputImage);
-        textRecognizer.close();
+      if (event.isOcr) {
+        for (var imageFile in state.imageFiles) {
+          final textRecognizer = TextRecognizer();
+          final inputImage = InputImage.fromFile(imageFile);
+          final recognizedText = await textRecognizer.processImage(inputImage);
+          textRecognizer.close();
 
-        if (recognizedText.text.isNotEmpty) {
-          pdf.addPage(pw.Page(
-            build: (pw.Context context) =>
-                pw.Center(
-                  child: pw.Text(
-                      recognizedText.text, style: pw.TextStyle(font: ttf)),
-                ),
-          ));
+          if (recognizedText.text.isNotEmpty) {
+            pdf.addPage(pw.Page(
+              build: (pw.Context context) => pw.Center(
+                child: pw.Text(recognizedText.text, style: pw.TextStyle(font: ttf)),
+              ),
+            ));
+          }
+        }
+
+        pdfFile = File("${tempDir.path}/output.pdf");
+        final pdfBytes = await pdf.save();
+        await pdfFile.writeAsBytes(pdfBytes);
+
+        final result = await DataService().ImageToOcr(
+          pdfFile,
+          event.documentTypeId,
+          event.documentId,
+          event.fileName,
+        );
+
+        if (result.contains('successfully')) {
+          emit(state.copyWith(
+              fileUploadSuccess: result,
+              isFileUploadSuccess: true,
+              pdfFile: pdfBytes,
+              isOcrConversionSuccess: true));
+        } else {
+          emit(state.copyWith(
+              errorMessageWhileAddingFile: 'Failed to upload OCR file: $result',
+              errorWhileAddingFile: true));
+        }
+      } else {
+        final result = await DataService().ImageToPdf(
+          event.imageFiles!,
+          event.fileName,
+          event.documentTypeId,
+          event.documentId,
+        );
+
+        if (result.contains('successfully')) {
+          emit(state.copyWith(
+              fileUploadSuccess: result,
+              isFileUploadSuccess: true));
+        } else {
+          emit(state.copyWith(
+              errorMessageWhileAddingFile: 'Failed to upload PDF: $result',
+              errorWhileAddingFile: true));
         }
       }
-
-      final outputDir = await getTemporaryDirectory();
-      final outputFile = File("${outputDir.path}/output.pdf");
-      await outputFile.writeAsBytes(await pdf.save());
-
-      emit(state.copyWith(errorWhileAddingFile: false, wantToAdd: false));
     } catch (e) {
       emit(state.copyWith(
-          errorMessageWhileAddingFile: 'Failed to generate PDF: $e',
-          wantToAdd: false,
+          errorMessageWhileAddingFile: 'Error processing or uploading file: $e',
           errorWhileAddingFile: true));
     } finally {
-      emit(state.copyWith(loading: false));
-    }
-  }
-
-  Future<void> uploadPdfEvent(UploadPdfEvent event,
-      Emitter<FileState> emit) async {
-    emit(state.copyWith(loading: true, isUploading: true));
-    try {
-      final result = event.isOcr
-          ? await DataService().ImageToOcr(
-        event.pdfFile!,
-        event.documentTypeId,
-        event.documentId,
-        event.fileName,
-      )
-          : await DataService().ImageToPdf(
-        event.imageFiles,
-        event.fileName,
-        event.documentTypeId,
-        event.documentId,
-      );
-
-      if (result.contains('successfully')) {
-        emit(state.copyWith(
-            fileUploadSuccess: result, isFileUploadSuccess: true));
-      } else {
-        emit(state.copyWith(
-            errorMessageWhileAddingFile: 'Failed to upload file: $result',
-            errorWhileAddingFile: true));
-      }
-    } catch (e) {
       emit(state.copyWith(
-          errorMessageWhileAddingFile: 'Error uploading file: $e',
-          errorWhileAddingFile: true));
-    } finally {
-      emit(state.copyWith(loading: false,
+          loading: false,
+          isUploading: false,
           fileName: "",
-          imageFiles: null,
+          imageFiles: [],
           fileUploadSuccess: "",
-          isFileUploadSuccess: false,
-          isUploading: false));
+          isFileUploadSuccess: false));
     }
   }
 
@@ -270,6 +275,32 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     }
   }
 
+  Future<void>updateSelectedFileIdsEvent(UpdateSelectedIds event, Emitter<FileState>emit)async{
+    List<int> fileIds = List<int>.from(event.fileIds ?? []);
+    if(fileIds.contains(event.newFileId)){
+      fileIds.remove(event.newFileId);
+    }else {
+      fileIds.add(event.newFileId);
+    }
+    emit(state.copyWith(selectedFileIds: fileIds));
+  }
+
+  Future<void>downloadFileEvent(DownloadFile event, Emitter<FileState>emit)async{
+    emit(state.copyWith(wantsToDownloadFile: true));
+    try{
+      await DataService().downloadFile(event.downloadFileId);
+      emit(state.copyWith(fileDownloadSuccess: true, fileDownloadMessage: "File downloaded successfully!"));
+    }catch(e){
+      emit(state.copyWith(fileDownloadSuccess: false, fileDownloadMessage: e.toString()));
+    }finally{
+      emit(state.copyWith(fileDownloadSuccess: false, fileDownloadMessage: "", wantsToDownloadFile: false));
+    }
+  }
+
+  void resetFileStateEvent(ResetFileState event, Emitter <FileState> emit)async{
+    emit(FileStateInitial());
+  }
+
   void wantsToEditFileNameEvent(WantsToEditFileName event,
       Emitter<FileState>emit) async {
     emit(state.copyWith(wantsToEdit: event.wantsToEdit));
@@ -293,5 +324,17 @@ class FileBloc extends Bloc<FileEvent, FileState> {
 
   void wantsToDeleteEvent(WantsToDelete event, Emitter<FileState> emit)async{
     emit(state.copyWith(wantsToDelete: event.wantsToDelete));
+  }
+
+  void selectFileEvent(SelectFile event, Emitter<FileState>emit)async{
+    emit(state.copyWith(isItemSelected: !state.isItemSelected));
+  }
+
+  void clearSelectedFilesEvent(ClearSelectedFiles event, Emitter<FileState>emit)async{
+    emit(state.copyWith(selectedFileIds: []));
+  }
+
+  void wantsToDownloadFileEvent(WantsToDownloadFile event, Emitter<FileState>emit)async{
+    emit(state.copyWith(wantsToDownloadFile: !event.wantsToDownload));
   }
 }

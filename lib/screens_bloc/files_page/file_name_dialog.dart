@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,7 +28,7 @@ class FileNameDialog extends StatelessWidget{
         TextButton(
           child: const Text('Save'),
           onPressed: () async{
-            if(fileNameController.text.isNotEmpty && fileNameController.text != null) {
+            if(fileNameController.text.isNotEmpty) {
               BlocProvider.of<FileBloc>(context)
                   .add(SaveFileName(fileName: fileNameController.text));
               Navigator.of(context).pop();

@@ -24,18 +24,6 @@ class DocumentsPage extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        if (state is DocumentStateInitial) {
-          context.read<DocumentBloc>().add(GetDocumentType());
-
-          getUserId().then((userId) {
-            if (userId != null) {
-              context.read<DocumentBloc>().add(GetDocuments(user_id: userId));
-            }
-          });
-
-          return const Center(child: CircularProgressIndicator());
-        }
-
         return Scaffold(
           appBar: !state.isItemSelected ? AppBar(
             title: const Text("Documents Archive"),
@@ -178,14 +166,6 @@ class DocumentsPage extends StatelessWidget {
                             .add(SelectItem(isItemSelected: true));
                       }
                     },
-                    /*  trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        BlocProvider.of<DocumentBloc>(context)
-                            .add(DeleteDocument(id: document.id));
-                      },
-                    ),
-*/
                   );
                 },
               ),

@@ -13,6 +13,10 @@ class DocumentState extends Equatable{
   final int documentTypeId;
   final List<int>selectedDocumentIds;
   final bool isItemSelected;
+  final bool errorWhileLoadingDocumentTypes;
+  final String errorMessageWhileLoadingDocumentTypes;
+  final bool errorWhileLoadingDocuments;
+  final String errorMessageWhileLoadingDocuments;
 
   const DocumentState({
     this.wantToAdd = false,
@@ -26,7 +30,11 @@ class DocumentState extends Equatable{
     this.loading = false,
     this.documentTypeId = -1,
     this.selectedDocumentIds = const [],
-    this.isItemSelected = false
+    this.isItemSelected = false,
+    this.errorWhileLoadingDocumentTypes = false,
+    this.errorMessageWhileLoadingDocumentTypes = "",
+    this.errorMessageWhileLoadingDocuments = "",
+    this.errorWhileLoadingDocuments = false
   });
 
   DocumentState copyWith({
@@ -41,7 +49,11 @@ class DocumentState extends Equatable{
     int? documentTypeId,
     bool? loading,
     List<int>? selectedDocumentIds,
-    bool? isItemSelected
+    bool? isItemSelected,
+    bool? errorWhileLoadingDocumentTypes,
+    String? errorMessageWhileLoadingDocumentTypes,
+    bool? errorWhileLoadingDocuments,
+    String? errorMessagesWhileLoadingDocuments
   }) {
     return DocumentState(
         wantToAdd: wantToAdd ?? this.wantToAdd,
@@ -57,7 +69,11 @@ class DocumentState extends Equatable{
         loading: loading ?? this.loading,
         documentTypeId: documentTypeId ?? this.documentTypeId,
         selectedDocumentIds: selectedDocumentIds ?? this.selectedDocumentIds,
-        isItemSelected: isItemSelected ?? this.isItemSelected
+        isItemSelected: isItemSelected ?? this.isItemSelected,
+        errorWhileLoadingDocumentTypes: errorWhileLoadingDocumentTypes ?? this.errorWhileLoadingDocumentTypes,
+        errorMessageWhileLoadingDocumentTypes: errorMessageWhileLoadingDocumentTypes ?? this.errorMessageWhileLoadingDocumentTypes,
+        errorWhileLoadingDocuments: errorWhileLoadingDocuments ?? this.errorWhileLoadingDocuments,
+        errorMessageWhileLoadingDocuments: errorMessageWhileLoadingDocuments ?? this.errorMessageWhileLoadingDocuments
     );
   }
 
@@ -74,7 +90,11 @@ class DocumentState extends Equatable{
     loading,
     documentTypeId,
     selectedDocumentIds,
-    isItemSelected
+    isItemSelected,
+    errorWhileLoadingDocumentTypes,
+    errorMessageWhileLoadingDocumentTypes,
+    errorWhileLoadingDocuments,
+    errorMessageWhileLoadingDocuments
   ];
 }
 
@@ -91,6 +111,10 @@ final class DocumentStateInitial extends DocumentState{
     super.loading,
     super.documentTypeId,
     super.selectedDocumentIds,
-    super.isItemSelected
+    super.isItemSelected,
+    super.errorMessageWhileLoadingDocumentTypes,
+    super.errorWhileLoadingDocumentTypes,
+    super.errorMessageWhileLoadingDocuments,
+    super.errorWhileLoadingDocuments
   });
 }

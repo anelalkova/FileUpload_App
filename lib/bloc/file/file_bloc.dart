@@ -6,11 +6,13 @@ import 'package:file_upload_app_part2/models/file.dart';
 import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:equatable/equatable.dart';
+import 'package:share_plus/share_plus.dart';
 
 part 'file_event.dart';
 part 'file_state.dart';
@@ -42,6 +44,8 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     on<ResetFileState>(resetFileStateEvent);
     on<WantsToDownloadFile>(wantsToDownloadFileEvent);
     on<DownloadFile>(downloadFileEvent);
+    on<ShareFile>(shareFileEvent);
+    on<ReturnFileInitialState>(returnToInitialState);
   }
 
   void loadFilesEvent(LoadFiles event, Emitter<FileState> emit) async {
@@ -288,12 +292,40 @@ class FileBloc extends Bloc<FileEvent, FileState> {
   Future<void>downloadFileEvent(DownloadFile event, Emitter<FileState>emit)async{
     emit(state.copyWith(wantsToDownloadFile: true));
     try{
-      await DataService().downloadFile(event.downloadFileId);
-      emit(state.copyWith(fileDownloadSuccess: true, fileDownloadMessage: "File downloaded successfully!"));
+      var result = await DataService().downloadFile(event.downloadFileId);
+      emit(state.copyWith(fileDownloadSuccess: true, fileDownloadMessage: result.toString()));
     }catch(e){
       emit(state.copyWith(fileDownloadSuccess: false, fileDownloadMessage: e.toString()));
     }finally{
       emit(state.copyWith(fileDownloadSuccess: false, fileDownloadMessage: "", wantsToDownloadFile: false));
+    }
+  }
+
+  Future<void>shareFileEvent(ShareFile event, Emitter<FileState>emit)async {
+    emit(state.copyWith(wantsToShare: true));
+    try {
+
+      //simni pa izbrisi go posle uspeshno share a i za voa da ne se prikazuva toast porakata succesfull download...
+      //napravi kopce za remember pri login
+      //edit account
+      //i hide/unhide na password na login screen
+      await DataService().downloadFile(state.fileId);
+      final directory = await getExternalStorageDirectory();
+      final filePath = '${directory!.path}/FileUploadApp/file_${state.fileId}.pdf';
+
+      if (await File(filePath).exists()) {
+        Share.shareXFiles([XFile(filePath)]);
+      } else {
+        Fluttertoast.showToast(
+          msg: "File not found.",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+    }catch(e){
+      emit(state.copyWith(wantsToShare: false));
+    }finally {
+      emit(state.copyWith(wantsToShare: false));
     }
   }
 
@@ -336,5 +368,9 @@ class FileBloc extends Bloc<FileEvent, FileState> {
 
   void wantsToDownloadFileEvent(WantsToDownloadFile event, Emitter<FileState>emit)async{
     emit(state.copyWith(wantsToDownloadFile: !event.wantsToDownload));
+  }
+
+  void returnToInitialState(ReturnFileInitialState event, Emitter<FileState> emit)async{
+    emit(FileStateInitial());
   }
 }

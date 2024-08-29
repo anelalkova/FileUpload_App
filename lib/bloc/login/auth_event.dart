@@ -25,7 +25,7 @@ class RegisterAndSendVerificationCode extends AuthEvent{
   });
 }
 
-class ReturnInitialState extends AuthEvent {}
+class ReturnAuthInitialState extends AuthEvent {}
 
 class AutoLogin extends AuthEvent {}
 
@@ -39,3 +39,4 @@ class ForgotPassword extends AuthEvent {
 
 class RequestPermissions extends AuthEvent {}
 
+class VerifyAccount extends AuthEvent{}

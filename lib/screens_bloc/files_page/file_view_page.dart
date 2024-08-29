@@ -1,8 +1,12 @@
+import 'dart:io'; // Import for File operations
 import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
 import 'package:file_upload_app_part2/screens_bloc/files_page/confirm_delete_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class FileViewPage extends StatelessWidget {
   FileViewPage({super.key});
@@ -136,7 +140,9 @@ class FileViewPage extends StatelessWidget {
                               }),
                           IconButton(
                               icon: const Icon(Icons.share),
-                              onPressed: () {}),
+                              onPressed: () async {
+                                BlocProvider.of<FileBloc>(context).add(ShareFile());
+                              }),
                         ],
                       ),
                     ),
@@ -160,12 +166,6 @@ class FileViewPage extends StatelessWidget {
         if (state.updateSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.updateSuccessMessage)),
-          );
-        }
-
-        if(state.fileDownloadSuccess){
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.fileDownloadMessage)),
           );
         }
       },

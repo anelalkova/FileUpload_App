@@ -54,6 +54,9 @@ class FileState extends Equatable {
   final bool wantsToDownloadFile;
   final bool fileDownloadSuccess;
   final String fileDownloadMessage;
+  //User wants to share file
+  final bool wantsToShare;
+
   FileState({
     this.wantToAdd = false,
     this.allFilesForDocument = const [],
@@ -84,7 +87,8 @@ class FileState extends Equatable {
     this.isItemSelected = false,
     this.wantsToDownloadFile = false,
     this.fileDownloadMessage = "",
-    this.fileDownloadSuccess = false
+    this.fileDownloadSuccess = false,
+    this.wantsToShare = false
   }) : pdfFile = pdfFile ?? Uint8List(0);
 
   FileState copyWith({
@@ -117,7 +121,8 @@ class FileState extends Equatable {
     bool? isItemSelected,
     bool? wantsToDownloadFile,
     bool? fileDownloadSuccess,
-    String? fileDownloadMessage
+    String? fileDownloadMessage,
+    bool? wantsToShare
   }) {
     return FileState(
         wantToAdd: wantToAdd ?? this.wantToAdd,
@@ -153,7 +158,8 @@ class FileState extends Equatable {
         isItemSelected: isItemSelected ?? this.isItemSelected,
         wantsToDownloadFile: wantsToDownloadFile ?? this.wantsToDownloadFile,
         fileDownloadMessage: fileDownloadMessage ?? this.fileDownloadMessage,
-        fileDownloadSuccess: fileDownloadSuccess ?? this.fileDownloadSuccess
+        fileDownloadSuccess: fileDownloadSuccess ?? this.fileDownloadSuccess,
+        wantsToShare: wantsToShare ?? this.wantsToShare
     );
   }
 
@@ -188,7 +194,8 @@ class FileState extends Equatable {
     isItemSelected,
     wantsToDownloadFile,
     fileDownloadSuccess,
-    fileDownloadMessage
+    fileDownloadMessage,
+    wantsToShare
   ];
 }
 
@@ -222,6 +229,7 @@ final class FileStateInitial extends FileState {
     super.isItemSelected,
     super.wantsToDownloadFile,
     super.fileDownloadMessage,
-    super.fileDownloadSuccess
+    super.fileDownloadSuccess,
+    super.wantsToShare
   });
 }

@@ -10,3 +10,5 @@ class TabChange extends LandingPageEvent{
 
   TabChange({required this.tabIndex});
 }
+
+class ReturnLandingInitialState extends LandingPageEvent{}

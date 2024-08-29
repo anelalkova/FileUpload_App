@@ -15,6 +15,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<DeleteAccount>(userWantsToDeleteAccount);
     on<DeactivateAccount>(userWantsToDeactivateAccount);
     on<LogoutButtonPressed>(userWantsToLogout);
+    on<ReturnAccountInitialState>(returnInitialState);
   }
 
   Future<void> userWantsToUpdateAccount(UpdateAccount event, Emitter<AccountState> emit) async {
@@ -60,5 +61,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } finally {
       emit(state.copyWith(logoutSuccess: false));
     }
+  }
+
+  void returnInitialState(ReturnAccountInitialState event, Emitter<AccountState>emit){
+    emit(AccountStateInitial());
   }
 }

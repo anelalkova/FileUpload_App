@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
 import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 
@@ -17,12 +18,12 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
     on<AddDocument>(addDocumentEvent);
     on<GetDocuments>(getDocuments);
     on<GetDocumentType>(getDocumentTypes);
-    on<ErrorWhileAddingDocument>(errorWhileAddingDocument);
     on<DocumentIsTapped>(documentIsTapped);
     on<DeleteDocument>(deleteDocument);
     on<UpdateSelectedDocumentIds>(updateSelectedDocumentIdsEvent);
     on<SelectItem>(selectItemEvent);
     on<ClearSelectedItems>(clearSelectedItemsEvent);
+    on<ReturnDocumentInitialState>(returnToInitialState);
   }
 
   Future<void> deleteDocument(DeleteDocument event, Emitter<DocumentState> emit) async{
@@ -59,13 +60,21 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
         errorWhileAddingDocument: true,
         errorMessageWhileAddingDocument: error.toString(),
       ));
+    }finally{
+      emit(state.copyWith(wantToAdd: false, errorMessageWhileAddingDocument: "", errorWhileAddingDocument: false));
     }
   }
 
   FutureOr<void> getDocuments(GetDocuments event, Emitter<DocumentState> emit)async{
-    List<DocumentModel> documents = await DataService().getDocumentsBLOC(event.user_id);
-    var document = documents.reversed.toList();
-    emit(state.copyWith(userDocuments: document, loading: false));
+    emit(state.copyWith(loading: true));
+    try{
+      List<DocumentModel> documents = await DataService().getDocumentsBLOC(event.user_id);
+      emit(state.copyWith(userDocuments: documents, loading: false));
+    }catch(e){
+      emit(state.copyWith(errorWhileLoadingDocuments: true, errorMessagesWhileLoadingDocuments: e.toString(), loading: false));
+    }finally{
+      emit(state.copyWith(errorWhileLoadingDocuments: false, errorMessagesWhileLoadingDocuments: "", loading: false));
+    }
   }
 
   FutureOr<void> getDocumentTypes(GetDocumentType event, Emitter<DocumentState> emit) async {
@@ -74,8 +83,8 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
       emit(state.copyWith(allDocumentTypes: documentTypes));
     } catch (error) {
       emit(state.copyWith(
-          errorWhileAddingDocument: true,
-          errorMessageWhileAddingDocument: error.toString()
+          errorWhileLoadingDocumentTypes: true,
+          errorMessageWhileLoadingDocumentTypes: error.toString()
       ));
     }
   }
@@ -90,10 +99,6 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
     emit(state.copyWith(selectedDocumentIds: documentIds));
   }
 
-  void errorWhileAddingDocument(ErrorWhileAddingDocument event, Emitter<DocumentState> emit) async{
-    emit(state.copyWith(errorWhileAddingDocument: true, errorMessageWhileAddingDocument: event.error, wantToAdd: false));
-  }
-
   void documentIsTapped(DocumentIsTapped event, Emitter<DocumentState> emit)async{
     emit(state.copyWith(documentId: event.documentId, documentTypeId: event.documentTypeId));
   }
@@ -104,5 +109,9 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
 
   void clearSelectedItemsEvent(ClearSelectedItems event, Emitter<DocumentState>emit){
     emit(state.copyWith(selectedDocumentIds: []));
+  }
+
+  void returnToInitialState(ReturnDocumentInitialState event, Emitter<DocumentState>emit){
+    emit(DocumentStateInitial());
   }
 }

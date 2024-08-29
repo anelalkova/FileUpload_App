@@ -69,3 +69,4 @@ class SelectItem extends DocumentEvent{
 
 class ClearSelectedItems extends DocumentEvent{}
 
+class ReturnDocumentInitialState extends DocumentEvent{}

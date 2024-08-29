@@ -60,3 +60,4 @@ class LogoutButtonPressed extends AccountEvent{
   List<Object?> get props => [userWantsToLogout];
 }
 
+class ReturnAccountInitialState extends AccountEvent{}

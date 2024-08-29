@@ -188,3 +188,7 @@ class DownloadFile extends FileEvent{
 
   DownloadFile({required this.downloadFileId});
 }
+
+class ShareFile extends FileEvent{}
+
+class ReturnFileInitialState extends FileEvent{}

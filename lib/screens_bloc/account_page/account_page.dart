@@ -1,4 +1,8 @@
 import 'package:file_upload_app_part2/bloc/account/account_bloc.dart';
+import 'package:file_upload_app_part2/bloc/document/document_bloc.dart';
+import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
+import 'package:file_upload_app_part2/bloc/login/auth_bloc.dart';
+import 'package:file_upload_app_part2/bloc/main/landing_page_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -109,6 +113,11 @@ class AccountPage extends StatelessWidget{
         },
         listener: (context, state){
           if (state.logoutSuccess) {
+            BlocProvider.of<AuthBloc>(context).add(ReturnAuthInitialState());
+            BlocProvider.of<DocumentBloc>(context).add(ReturnDocumentInitialState());
+            BlocProvider.of<FileBloc>(context).add(ReturnFileInitialState());
+            BlocProvider.of<AccountBloc>(context).add(ReturnAccountInitialState());
+            BlocProvider.of<LandingPageBloc>(context).add(ReturnLandingInitialState());
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const LoginScreen()),

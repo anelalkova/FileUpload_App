@@ -1,4 +1,4 @@
-/*part of 'auth_bloc.dart';
+part of 'auth_bloc.dart';
 
 class AuthState extends Equatable{
   final bool loginIsValid;
@@ -65,7 +65,8 @@ class AuthState extends Equatable{
 
 final class AuthStateInitial extends AuthState{
   const AuthStateInitial();
-}*/
+}
+/*
 part of 'auth_bloc.dart';
 
 class AuthState{
@@ -116,3 +117,4 @@ final class AuthFailure extends AuthState{
 }
 
 final class AutoLoginSuccess extends AuthState {}
+*/

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../models/document_type.dart';
 import '../models/file.dart';
@@ -287,20 +289,20 @@ class DataService {
     }
   }
 
-  Future<void> downloadFile(int fileId) async {
+  FutureOr<String?> downloadFile(int fileId) async {
     final Dio dio = Dio();
     final String url = 'http://10.20.1.101:5039/api/Files/GetFile/$fileId';
 
     try {
       final directory = await getExternalStorageDirectory();
-     final downloadsDirectory = Directory("/storage/emulated/0/FileUploadApp");
+      final downloadsDirectory = Directory("${directory!.path}/FileUploadApp");
+
       if (!await downloadsDirectory.exists()) {
         await downloadsDirectory.create(recursive: true);
       }
-//storage/emulated/0/FileUploadApp
+
       final filePath = '${downloadsDirectory.path}/file_$fileId.pdf';
-      //se zacuvue u This PC\Anastasija's S22+\Internal storage\Android\data\com.example.file_upload_app_part2\files\FileUploads
-      //ama ne moze da se otvore papkata na tel radi permisii na Android taka da na kompjuterot moze da se potvrde deka se siminja
+
       await dio.download(url, filePath);
 
       Fluttertoast.showToast(
@@ -308,13 +310,14 @@ class DataService {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
       );
+      return "File downloaded to $filePath";
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Error downloading file: $e",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
       );
-      print("Error downloading file: $e");
+      return "Error downloading file: $e";
     }
   }
 

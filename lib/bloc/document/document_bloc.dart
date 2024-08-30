@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:file_upload_app_part2/bloc/file/file_bloc.dart';
 import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:file_upload_app_part2/network/data_service.dart';
 
@@ -37,7 +36,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
 
   void addDocumentEvent(AddDocument event, Emitter<DocumentState> emit) async {
     try {
-      DataService().createDocument(CreateDocumentRequest(
+      await DataService().createDocument(CreateDocumentRequest(
         id: event.document.id,
         description: event.document.description,
         documentTypeId: event.document.document_type_id,
@@ -45,14 +44,13 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState>{
         timestamp: event.document.timestamp,
       ));
 
-      List<DocumentModel> currentDocuments = List.from(state.userDocuments);
-      currentDocuments.add(event.document);
+      List<DocumentModel> userDocuments = await DataService().getDocumentsBLOC(event.document.user_id);
 
       emit(state.copyWith(
         wantToAdd: false,
         errorMessageWhileAddingDocument: null,
         errorWhileAddingDocument: false,
-        userDocuments: currentDocuments,
+        userDocuments: userDocuments,
       ));
     } catch (error) {
       emit(state.copyWith(

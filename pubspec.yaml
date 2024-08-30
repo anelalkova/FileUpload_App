@@ -62,3 +62,5 @@ flutter:
     - assets/modify_icon.png
     - assets/no_data_icon.png
     - assets/empty_folder_icon.png
+    - assets/hello_icon.png
+    - assets/register_icon.png

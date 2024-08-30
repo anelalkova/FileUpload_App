@@ -293,8 +293,18 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     emit(state.copyWith(wantsToDownloadFile: true));
     try{
       var result = await DataService().downloadFile(event.downloadFileId);
+      Fluttertoast.showToast(
+        msg: "File downloaded to $result",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
       emit(state.copyWith(fileDownloadSuccess: true, fileDownloadMessage: result.toString()));
     }catch(e){
+      Fluttertoast.showToast(
+        msg: "Error downloading file: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
       emit(state.copyWith(fileDownloadSuccess: false, fileDownloadMessage: e.toString()));
     }finally{
       emit(state.copyWith(fileDownloadSuccess: false, fileDownloadMessage: "", wantsToDownloadFile: false));
@@ -314,7 +324,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
       final filePath = '${directory!.path}/FileUploadApp/file_${state.fileId}.pdf';
 
       if (await File(filePath).exists()) {
-        Share.shareXFiles([XFile(filePath)]);
+        await Share.shareXFiles([XFile(filePath)]);
       } else {
         Fluttertoast.showToast(
           msg: "File not found.",
@@ -322,6 +332,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
           gravity: ToastGravity.BOTTOM,
         );
       }
+      await File(filePath).delete();
     }catch(e){
       emit(state.copyWith(wantsToShare: false));
     }finally {

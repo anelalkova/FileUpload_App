@@ -10,7 +10,6 @@ class FileState extends Equatable {
   //If uploading a file for error logs
   final bool errorWhileAddingFile;
   final String errorMessageWhileAddingFile;
-  //
   final int fileId;
   //For uploading a file, whether its an OCR file or not
   final bool isOcr;
@@ -88,7 +87,7 @@ class FileState extends Equatable {
     this.wantsToDownloadFile = false,
     this.fileDownloadMessage = "",
     this.fileDownloadSuccess = false,
-    this.wantsToShare = false
+    this.wantsToShare = false,
   }) : pdfFile = pdfFile ?? Uint8List(0);
 
   FileState copyWith({
@@ -122,7 +121,7 @@ class FileState extends Equatable {
     bool? wantsToDownloadFile,
     bool? fileDownloadSuccess,
     String? fileDownloadMessage,
-    bool? wantsToShare
+    bool? wantsToShare,
   }) {
     return FileState(
         wantToAdd: wantToAdd ?? this.wantToAdd,
@@ -159,7 +158,7 @@ class FileState extends Equatable {
         wantsToDownloadFile: wantsToDownloadFile ?? this.wantsToDownloadFile,
         fileDownloadMessage: fileDownloadMessage ?? this.fileDownloadMessage,
         fileDownloadSuccess: fileDownloadSuccess ?? this.fileDownloadSuccess,
-        wantsToShare: wantsToShare ?? this.wantsToShare
+        wantsToShare: wantsToShare ?? this.wantsToShare,
     );
   }
 
@@ -195,7 +194,7 @@ class FileState extends Equatable {
     wantsToDownloadFile,
     fileDownloadSuccess,
     fileDownloadMessage,
-    wantsToShare
+    wantsToShare,
   ];
 }
 
@@ -230,6 +229,6 @@ final class FileStateInitial extends FileState {
     super.wantsToDownloadFile,
     super.fileDownloadMessage,
     super.fileDownloadSuccess,
-    super.wantsToShare
+    super.wantsToShare,
   });
 }

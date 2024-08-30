@@ -18,7 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     on<ReturnAuthInitialState>(returnToInitialState);
     on<AutoLogin>(autoLogin);
     on<RequestPermissions>(requestPermissions);
-
+    on<SetEmail>(setEmailEvent);
+    on<VerifyAccount>(verifyAccount);
   }
 
   Future<void> returnToInitialState(ReturnAuthInitialState event, Emitter<AuthState> emit)async{
@@ -53,7 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
 
         emit(state.copyWith(
           loginIsValid: true,
-          loginErrorMessage: "",  // Clear the error message on successful login
+          loginErrorMessage: "",
           loading: false,
         ));
       } else {
@@ -128,7 +129,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
   }
 
 
-  Future<void> verifyAccount(VerifyAccount verifyAccountEvent, Emitter<AuthState>emit)async{
-    emit(state.copyWith(isUserAccountActive: true));
+  Future<void> verifyAccount(VerifyAccount event, Emitter<AuthState>emit)async{
+    emit(state.copyWith(isUserAccountActive: false, accountVerificationSuccess: false));
+    try{
+      var result = await DataService().verifyAccount(event.code, state.email);
+      if(result.success){
+        emit(state.copyWith(isUserAccountActive: true, accountVerificationSuccess: true));
+      }else{
+        emit(state.copyWith(isUserAccountActive: false, accountVerificationSuccess: false));
+      }
+    }catch(e){
+      emit(state.copyWith(isUserAccountActive: false, accountVerificationSuccess: false));
+    }
+  }
+
+  void setEmailEvent(SetEmail event, Emitter<AuthState>emit)async{
+    emit(state.copyWith(email: event.email));
   }
 }

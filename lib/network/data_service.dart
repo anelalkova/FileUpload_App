@@ -8,9 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:file_upload_app_part2/network/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../models/document_type.dart';
 import '../models/file.dart';
@@ -240,7 +238,7 @@ class DataService {
 
   Future<String> ImageToPdf(List<File> images, String fileName, int documentTypeId, int documentId) async {
     final uri = Uri.parse(
-        'http://10.20.1.101:5039/api/Files/ImageToPdf?documentType=$documentTypeId&documentId=$documentId&fileName=$fileName');
+        'http://10.20.1.101:5039/api/Files/ImageToPdf?fileName=$fileName&documentTypeId=$documentTypeId&documentId=$documentId');
     final request = http.MultipartRequest('POST', uri);
 
     for (var image in images) {
@@ -305,18 +303,8 @@ class DataService {
 
       await dio.download(url, filePath);
 
-      Fluttertoast.showToast(
-        msg: "File downloaded to $filePath",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-      );
-      return "File downloaded to $filePath";
+      return filePath;
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error downloading file: $e",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-      );
       return "Error downloading file: $e";
     }
   }
@@ -445,6 +433,35 @@ class DataService {
       return Response(success: true);
     }catch(e){
      return Response(success: false, error: e.toString());
+    }
+  }
+  
+  Future<Response<bool>> verifyAccount(String token, String email) async {
+    final dio = Dio();
+
+    try {
+      final uri = Uri.parse('http://10.20.1.101:5039/User/verifyemail')
+          .replace(queryParameters: {
+        'email': email,
+        'token': token,
+      });
+
+      // Print the constructed URL
+      print('Constructed URL: ${uri.toString()}');
+
+      var response = await dio.get(uri.toString());
+
+      if (response.statusCode == 200) {
+        String result = response.data;
+        print('Verification result: $result');
+        return Response(success: true);
+      } else {
+        print('Failed to verify account. Status code: ${response.statusCode}');
+        return Response(success: false, error: response.statusMessage);
+      }
+    } catch (e) {
+      print('Error: $e');
+      return Response(success: false, error: e.toString());
     }
   }
 }

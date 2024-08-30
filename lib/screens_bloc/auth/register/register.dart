@@ -1,4 +1,5 @@
 import 'package:file_upload_app_part2/bloc/login/auth_bloc.dart';
+import 'package:file_upload_app_part2/screens_bloc/auth/verify_account/verify_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +15,6 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocConsumer<AuthBloc, AuthState>(
@@ -25,15 +25,6 @@ class RegisterScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => LandingPage()),
                     (Route<dynamic> route) => false,
               );
-            } else if (state.isUserRegistered) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("We've sent an email to ${emailController.text} please verify your account!")),
-              );
-            }
-            else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.registrationErrorMessage)),
-              );
             }
           },
           builder: (context, state) {
@@ -43,6 +34,11 @@ class RegisterScreen extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Text(
+                  'Register',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                SizedBox(height: 70),
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
@@ -68,17 +64,40 @@ class RegisterScreen extends StatelessWidget {
                   obscureText: true,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    BlocProvider.of<AuthBloc>(context).add(
-                      RegisterAndSendVerificationCode(
-                        email: emailController.text,
-                        password: passwordController.text,
-                        name: nameController.text,
-                      ),
-                    );
-                  },
-                  child: const Text('Sign up'),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: ElevatedButton(
+                            onPressed: (){
+                              Navigator.pop(context);
+                            },
+                            child: Text('Cancel')
+                        ),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<AuthBloc>(context).add(SetEmail(email: emailController.text));
+                            BlocProvider.of<AuthBloc>(context).add(
+                              RegisterAndSendVerificationCode(
+                                email: emailController.text,
+                                password: passwordController.text,
+                                name: nameController.text,
+                              ),
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => VerifyAccountScreen()),
+                            );
+                          },
+                          child: const Text('Sign up'),
+                        ),
+                    )
+                  ],
                 ),
               ],
             );

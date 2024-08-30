@@ -10,6 +10,8 @@ class AuthState extends Equatable{
   final String registrationErrorMessage;
   final String loginErrorMessage;
   final bool isAutoLoginSuccess;
+  final String email;
+  final bool accountVerificationSuccess;
 
   const AuthState({
     this.loginIsValid = false,
@@ -20,7 +22,9 @@ class AuthState extends Equatable{
     this.loading = false,
     this.registrationErrorMessage = "",
     this.loginErrorMessage = "",
-    this.isAutoLoginSuccess = false
+    this.isAutoLoginSuccess = false,
+    this.email = "",
+    this.accountVerificationSuccess = false
   });
 
   AuthState copyWith({
@@ -32,7 +36,9 @@ class AuthState extends Equatable{
     bool? loading,
     String? registrationErrorMessage,
     String? loginErrorMessage,
-    bool? isAutoLoginSuccess
+    bool? isAutoLoginSuccess,
+    String? email,
+    bool? accountVerificationSuccess
   }) {
     return AuthState(
         loginIsValid: loginIsValid ?? this.loginIsValid,
@@ -44,7 +50,9 @@ class AuthState extends Equatable{
         registrationErrorMessage: registrationErrorMessage ??
             this.registrationErrorMessage,
         loginErrorMessage: loginErrorMessage ?? this.loginErrorMessage,
-        isAutoLoginSuccess: isAutoLoginSuccess ?? this.isAutoLoginSuccess
+        isAutoLoginSuccess: isAutoLoginSuccess ?? this.isAutoLoginSuccess,
+      email: email ?? this.email,
+        accountVerificationSuccess: accountVerificationSuccess ?? this.accountVerificationSuccess
     );
   }
 
@@ -59,7 +67,9 @@ class AuthState extends Equatable{
     loading,
     registrationErrorMessage,
     loginErrorMessage,
-    isAutoLoginSuccess
+    isAutoLoginSuccess,
+    email,
+    accountVerificationSuccess
   ];
 }
 

@@ -39,4 +39,14 @@ class ForgotPassword extends AuthEvent {
 
 class RequestPermissions extends AuthEvent {}
 
-class VerifyAccount extends AuthEvent{}
+class VerifyAccount extends AuthEvent{
+  final String code;
+
+  VerifyAccount({required this.code});
+}
+
+class SetEmail extends AuthEvent{
+  String email;
+
+  SetEmail({required this.email});
+}

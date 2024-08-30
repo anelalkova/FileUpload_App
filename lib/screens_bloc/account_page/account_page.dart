@@ -32,8 +32,12 @@ class AccountPage extends StatelessWidget{
             ),
             body: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.all(50),
+                width: 400,
+                height: 600,
+                padding: const EdgeInsets.all(10),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Stack(
                       children: [
@@ -64,47 +68,38 @@ class AccountPage extends StatelessWidget{
                         ),
                       ],
                     ),
-                    const SizedBox(width: 200),
-                    const SizedBox(width: 200),
-                    const SizedBox(height: 10),
-                    const SizedBox(height: 30),
-                    const Divider(),
-                    //const Text("Welcome ${getEmail()}"),
-                    ElevatedButton(
-                        onPressed: () => {
-                        },
-                        child: const Text("Edit Account")
+                    SizedBox(height: 60),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              final userId = await getUserId();
+                              if (userId != null) {
+                                BlocProvider.of<AccountBloc>(context).add(
+                                  DeactivateAccount(id: userId),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Unable to retrieve user ID.')),
+                                );
+                              }
+                            },
+                            child: const Text("Deactivate Account")
+                        ),
+                        ElevatedButton(
+                            onPressed: () => "",
+                            child: const Text("Delete Account")
+                        ),
+                        ElevatedButton(
+                            onPressed: () => {
+                              BlocProvider.of<AccountBloc>(context).add(
+                                  LogoutButtonPressed(userWantsToLogout: true)
+                              )
+                            },
+                            child: const Text("Log out")
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                        onPressed: () async {
-                          final userId = await getUserId();
-                          if (userId != null) {
-                            BlocProvider.of<AccountBloc>(context).add(
-                              DeactivateAccount(id: userId),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Unable to retrieve user ID.')),
-                            );
-                          }
-                        },
-                        child: const Text("Deactivate Account")
-                    ),
-                    ElevatedButton(
-                        onPressed: () => "",
-                        child: const Text("Delete Account")
-                    ),
-                    ElevatedButton(
-                        onPressed: () => {
-                          BlocProvider.of<AccountBloc>(context).add(
-                            LogoutButtonPressed(userWantsToLogout: true)
-                          )
-                        },
-                        child: const Text("Log out")
-                    ),
-                    const SizedBox(height: 10),
-                    const SizedBox(width: 200),
-                    const SizedBox(width: 200),
                   ],
                 ),
               ),

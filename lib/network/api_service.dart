@@ -44,6 +44,9 @@ abstract class ApiService {
   @GET('/api/Files/GetFileSize/{path}')
   Future<double> getFileSize(@Path('path') String path);
 
+  /*@GET('/User/verifyemail')
+  Future<bool> verifyAccount(@Query() String email, String token);*/
+
   //POST REQUESTS
   @POST('/api/Documents')
   Future<CreateDocumentRequest> createDocument(@Body() CreateDocumentRequest createDocumentRequest);
@@ -301,4 +304,20 @@ class UpdateFile{
   factory UpdateFile.fromJson(Map<String, dynamic> json) => _$UpdateFileFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateFileToJson(this);
+}
+
+@JsonSerializable()
+class VerifyAccount{
+  @JsonKey(name: 'email')
+  final String email;
+  @JsonKey(name: 'token')
+  final String token;
+
+  VerifyAccount({
+    required this.email,
+    required this.token
+  });
+
+  factory VerifyAccount.fromJson(Map<String, dynamic>json) => _$VerifyAccountFromJson(json);
+  Map<String, dynamic> toJson() => _$VerifyAccountToJson(this);
 }

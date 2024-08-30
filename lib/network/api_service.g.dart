@@ -164,6 +164,18 @@ Map<String, dynamic> _$UpdateFileToJson(UpdateFile instance) =>
       'file_Name': instance.file_Name,
     };
 
+VerifyAccount _$VerifyAccountFromJson(Map<String, dynamic> json) =>
+    VerifyAccount(
+      email: json['email'] as String,
+      token: json['token'] as String,
+    );
+
+Map<String, dynamic> _$VerifyAccountToJson(VerifyAccount instance) =>
+    <String, dynamic>{
+      'email': instance.email,
+      'token': instance.token,
+    };
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -522,6 +534,40 @@ class _ApiService implements ApiService {
         )));
     final _result = await _dio.fetch<double>(_options);
     late double _value;
+    try {
+      _value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<bool> verifyAccount(VerifyAccount credentials) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(credentials.toJson());
+    final _options = _setStreamType<bool>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/User/verifyemail',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<bool>(_options);
+    late bool _value;
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
